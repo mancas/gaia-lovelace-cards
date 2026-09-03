@@ -1,7 +1,7 @@
 {
   "name": "custom-ha-cards",
-  "version": "0.1.0",
-  "description": "Custom Home Assistant Lovelace cards — button, sensor gauge, media player, room overview",
+  "version": "0.2.0",
+  "description": "Custom Home Assistant Lovelace cards — climate, lights, weather, air quality, appliances, presence, to-do, status, quick actions and more",
   "private": true,
   "type": "module",
   "scripts": {
