@@ -113,7 +113,8 @@ window.customCards.push(
   {
     type: 'custom-air-quality-card',
     name: 'Air Quality Card',
-    description: 'CO₂, PM2.5, VOC and comfort sensors with health colouring',
+    description:
+      'CO₂, PM2.5, VOC and comfort sensors — scale, hero or tile visualisation with health colouring',
     preview: true,
     documentationURL: DOCS,
   },

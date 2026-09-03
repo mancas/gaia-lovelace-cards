@@ -154,6 +154,13 @@ export interface WeatherCardConfig {
 export interface AirQualityCardConfig {
   type: string;
   name?: string;
+  /**
+   * Visual style:
+   * - `scale` (default): each pollutant plotted on its health scale with a marker
+   * - `hero`: one dominant verdict in a ring, pollutants as compact chips
+   * - `tiles`: value tiles with a four-step meter
+   */
+  style?: 'scale' | 'hero' | 'tiles';
   /** Enum sensor with values like good/fair/moderate/poor/very_poor/extremely_poor */
   quality?: string;
   co2?: string;
@@ -161,6 +168,14 @@ export interface AirQualityCardConfig {
   voc?: string;
   temperature?: string;
   humidity?: string;
+  /** Override the default health thresholds, as [fair, poor, unhealthy] */
+  thresholds?: {
+    co2?: [number, number, number];
+    pm25?: [number, number, number];
+    voc?: [number, number, number];
+  };
+  /** Hide the temperature/humidity comfort strip */
+  show_comfort?: boolean;
 }
 
 export interface ApplianceCardConfig {

@@ -20,6 +20,18 @@
 <body>
 <div id="root"></div>
 <script type="module">
+// Stand-in for HA's <ha-icon>: a real custom element, so it also renders inside card shadow roots.
+class HaIcon extends HTMLElement {
+  connectedCallback() {
+    if (this.shadowRoot) return;
+    const r = this.attachShadow({ mode: 'open' });
+    r.innerHTML = '<style>:host{display:inline-flex;width:var(--mdc-icon-size,24px);height:var(--mdc-icon-size,24px);' +
+      'align-items:center;justify-content:center;vertical-align:middle;flex-shrink:0}' +
+      'i{width:74%;height:74%;border-radius:26%;background:currentColor;opacity:.85;display:block}</style><i></i>';
+  }
+}
+customElements.define('ha-icon', HaIcon);
+
 const S = (id, state, attributes = {}) => [id, { entity_id: id, state, attributes, last_changed: new Date(Date.now()-3.7e6).toISOString(), last_updated: new Date().toISOString() }];
 const states = Object.fromEntries([
   S('climate.aire','cool',{friendly_name:'Aire', hvac_modes:['heat_cool','cool','heat','fan_only','dry','off'], fan_modes:['auto','low','medium','high'], fan_mode:'medium', temperature:26, current_temperature:24.5, min_temp:16, max_temp:30, target_temp_step:0.5, hvac_action:'cooling'}),
@@ -28,6 +40,12 @@ const states = Object.fromEntries([
   S('sensor.co2','941',{friendly_name:'CO2', unit_of_measurement:'ppm'}),
   S('sensor.pm25','1',{friendly_name:'PM2.5', unit_of_measurement:'µg/m³'}),
   S('sensor.aq','good',{friendly_name:'Calidad', device_class:'enum'}),
+  S('sensor.co2_hi','1340',{friendly_name:'CO2', unit_of_measurement:'ppm'}),
+  S('sensor.pm25_hi','18',{friendly_name:'PM2.5', unit_of_measurement:'µg/m³'}),
+  S('sensor.voc_hi','310',{friendly_name:'VOC'}),
+  S('sensor.aq_hi','poor',{friendly_name:'Calidad', device_class:'enum'}),
+  S('sensor.temp_hi','27.6',{unit_of_measurement:'°C', device_class:'temperature'}),
+  S('sensor.hum_hi','61',{unit_of_measurement:'%', device_class:'humidity'}),
   S('light.led_sofa','on',{friendly_name:'LED Sofa', supported_color_modes:['color_temp','xy'], color_mode:'xy', brightness:180, rgb_color:[64,128,255], min_color_temp_kelvin:2000, max_color_temp_kelvin:6500}),
   S('weather.casa','partlycloudy',{friendly_name:'Jerez', temperature:31.4, apparent_temperature:33, humidity:41, wind_speed:12, wind_speed_unit:'km/h', pressure:1012, pressure_unit:'hPa', temperature_unit:'°C'}),
   S('person.manu','home',{friendly_name:'Manu'}),
@@ -61,7 +79,12 @@ const hass = { states, language:'es', locale:{language:'es'},
 const CARDS = [
   ['custom-climate-card', {entity:'climate.aire', name:'Aire acondicionado', temperature_sensor:'sensor.temp', humidity_sensor:'sensor.hum'}],
   ['custom-weather-card', {entity:'weather.casa', name:'Jerez'}],
-  ['custom-air-quality-card', {name:'Calidad del aire · Salón', quality:'sensor.aq', co2:'sensor.co2', pm25:'sensor.pm25', temperature:'sensor.temp', humidity:'sensor.hum'}],
+  ['custom-air-quality-card', {name:'Air quality · Salón', style:'scale', quality:'sensor.aq', co2:'sensor.co2', pm25:'sensor.pm25', temperature:'sensor.temp', humidity:'sensor.hum'}],
+  ['custom-air-quality-card', {name:'Air quality · Salón (high)', style:'scale', quality:'sensor.aq_hi', co2:'sensor.co2_hi', pm25:'sensor.pm25_hi', voc:'sensor.voc_hi', temperature:'sensor.temp_hi', humidity:'sensor.hum_hi'}],
+  ['custom-air-quality-card', {name:'Air quality · Salón', style:'hero', quality:'sensor.aq', co2:'sensor.co2', pm25:'sensor.pm25', temperature:'sensor.temp', humidity:'sensor.hum'}],
+  ['custom-air-quality-card', {name:'Air quality · Salón (high)', style:'hero', quality:'sensor.aq_hi', co2:'sensor.co2_hi', pm25:'sensor.pm25_hi', voc:'sensor.voc_hi', temperature:'sensor.temp_hi', humidity:'sensor.hum_hi'}],
+  ['custom-air-quality-card', {name:'Air quality · Salón', style:'tiles', quality:'sensor.aq', co2:'sensor.co2', pm25:'sensor.pm25', temperature:'sensor.temp', humidity:'sensor.hum'}],
+  ['custom-air-quality-card', {name:'Air quality · Salón (high)', style:'tiles', quality:'sensor.aq_hi', co2:'sensor.co2_hi', pm25:'sensor.pm25_hi', voc:'sensor.voc_hi', temperature:'sensor.temp_hi', humidity:'sensor.hum_hi'}],
   ['custom-light-card', {entity:'light.led_sofa', name:'LED sofá'}],
   ['custom-appliance-card', {name:'Lavavajillas', icon:'mdi:dishwasher', power:'switch.dw_power', operation_state:'sensor.dw_state', program:'select.dw_program', progress:'sensor.dw_progress', finish_time:'sensor.dw_finish', door:'sensor.dw_door', remote_start:'binary_sensor.dw_remote', options:['switch.dw_half','switch.dw_dry','switch.dw_hyg'], stop_button:'button.dw_stop', pause_button:'button.dw_pause'}],
   ['custom-person-card', {entity:'person.manu', battery:'sensor.batt', battery_state:'sensor.batt_state', activity:'sensor.activity', steps:'sensor.steps'}],

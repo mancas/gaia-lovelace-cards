@@ -11,7 +11,7 @@ so it sizes itself sensibly inside **sections** views.
 | Climate Card | `custom-climate-card` | Hero thermostat: big target, +/- stepper, HVAC mode and fan mode pills, mode‑tinted background |
 | Light Card | `custom-light-card` | Toggle, brightness slider (debounced), white temperature swatches and colour presets |
 | Weather Card | `custom-weather-card` | Current conditions + daily/hourly forecast (uses the live forecast subscription) |
-| Air Quality Card | `custom-air-quality-card` | CO₂, PM2.5, VOC, temperature, humidity with health thresholds and an overall badge |
+| Air Quality Card | `custom-air-quality-card` | CO₂, PM2.5, VOC, temperature, humidity — three visualisations (`scale`, `hero`, `tiles`) with health thresholds |
 | Appliance Card | `custom-appliance-card` | Home Connect style: power, operation state, program picker, progress/ETA, options, start/stop |
 | Person Card | `custom-person-card` | Presence with zone colour, phone battery, activity, steps and last known location |
 | To‑do Card | `custom-todo-card` | Shopping/to‑do list: add inline, tick, remove, clear completed |
@@ -102,15 +102,35 @@ show_details: true
 ```
 
 ### Air Quality Card
+
+Three visualisations of the same data, chosen with `style`:
+
+| `style` | Reads as | Good for |
+|---------|----------|----------|
+| `scale` (default) | each pollutant plotted on its health scale, with a marker and an advisory line when action helps | a detail/room view — you see *how close* you are to needing to ventilate |
+| `hero` | one verdict in a progress ring, pollutants as compact chips | an overview view, next to the climate card |
+| `tiles` | value tiles with a four-step meter | dense grids, or when you mainly want the numbers |
+
 ```yaml
 type: custom:custom-air-quality-card
 name: Salón
-quality: sensor.monitor_aire_calidad_del_aire
+style: scale              # scale | hero | tiles
+quality: sensor.monitor_aire_calidad_del_aire   # optional enum sensor; drives the verdict
 co2: sensor.monitor_aire_dioxido_de_carbono
 pm25: sensor.monitor_aire_pm2_5
+voc: sensor.monitor_aire_voc
 temperature: sensor.monitor_aire_temperatura
 humidity: sensor.monitor_aire_humedad
+show_comfort: true        # temperature/humidity strip, default true
+thresholds:               # optional, [fair, poor, unhealthy]
+  co2: [800, 1000, 1500]
+  pm25: [12, 35, 55]
+  voc: [100, 250, 400]
 ```
+
+Levels colour from `--custom-aq-good-color` / `-fair-` / `-poor-` / `-bad-`, falling back to the
+theme's success/warning/error colours. Without a `quality` entity the verdict is the worst
+pollutant level; the `hero` subtitle names whichever pollutant sits furthest along its own scale.
 
 ### Appliance Card
 ```yaml

@@ -77,6 +77,20 @@ export class ApplianceCard extends LitElement {
         font-size: 0.78rem;
         white-space: nowrap;
       }
+      .status > span:not(.eta) {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      @container card (max-width: 220px) {
+        .status {
+          flex-wrap: wrap;
+        }
+        .status .eta {
+          margin-left: 0;
+        }
+      }
       .progress {
         height: 6px;
         border-radius: 3px;
