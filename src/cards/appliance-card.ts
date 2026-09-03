@@ -186,6 +186,16 @@ export class ApplianceCard extends LitElement {
       .chips ha-icon {
         --mdc-icon-size: 14px;
       }
+      @container card (max-width: 300px) {
+        .row {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 4px;
+        }
+        .actions {
+          flex-wrap: wrap;
+        }
+      }
     `,
   ];
 
@@ -237,6 +247,18 @@ export class ApplianceCard extends LitElement {
   private _press(entityId: string) {
     haptic(this, 'medium');
     this.hass.callService('button', 'press', { entity_id: entityId });
+  }
+
+  /** "Lavavajillas Extra seco" → "Extra seco" (strips the card name or its first word) */
+  private _optionLabel(id: string, cardName: string): string {
+    const raw = friendlyName(this.hass, id);
+    const first = cardName.split(/\s+/)[0];
+    for (const prefix of [cardName, first]) {
+      if (prefix && raw.toLowerCase().startsWith(prefix.toLowerCase())) {
+        return raw.slice(prefix.length).trim() || raw;
+      }
+    }
+    return raw;
   }
 
   private _selectProgram(e: Event) {
@@ -366,7 +388,7 @@ export class ApplianceCard extends LitElement {
                     @click=${() => this._toggle(id)}
                   >
                     <ha-icon icon=${on ? 'mdi:check' : 'mdi:plus'}></ha-icon
-                    >${friendlyName(this.hass, id).replace(new RegExp(`^${name}\\s*`, 'i'), '')}
+                    >${this._optionLabel(id, name)}
                   </button>`;
                 })}
               </div>`

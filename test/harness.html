@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  body { margin: 0; padding: 16px; background: #1e1e2e; color: #cdd6f4; font-family: Roboto, system-ui, sans-serif;
+    --primary-color: #cba6f7; --text-primary-color: #1e1e2e; --primary-text-color: #cdd6f4; --secondary-text-color: #a6adc8;
+    --card-background-color: #313244; --secondary-background-color: #45475a; --divider-color: #585b70;
+    --success-color: #a6e3a1; --warning-color: #f9e2af; --error-color: #f38ba8; --info-color: #89b4fa; --disabled-text-color: #6c7086;
+    --ha-card-border-radius: 12px; --mdc-icon-size: 24px; }
+  ha-card { display: block; background: var(--card-background-color); border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.4); }
+  ha-icon { display: inline-flex; width: var(--mdc-icon-size); height: var(--mdc-icon-size); align-items: center; justify-content: center; flex-shrink: 0; }
+  ha-icon::before { content: ""; width: 70%; height: 70%; border-radius: 30%; background: currentColor; opacity: .8; }
+  .row { display: flex; gap: 16px; align-items: flex-start; margin-bottom: 24px; }
+  .col { flex: 0 0 auto; }
+  .col > div.label { font-size: 11px; color: #a6adc8; margin-bottom: 4px; }
+</style>
+<script type="module" src="../dist/custom-ha-cards.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="module">
+const S = (id, state, attributes = {}) => [id, { entity_id: id, state, attributes, last_changed: new Date(Date.now()-3.7e6).toISOString(), last_updated: new Date().toISOString() }];
+const states = Object.fromEntries([
+  S('climate.aire','cool',{friendly_name:'Aire', hvac_modes:['heat_cool','cool','heat','fan_only','dry','off'], fan_modes:['auto','low','medium','high'], fan_mode:'medium', temperature:26, current_temperature:24.5, min_temp:16, max_temp:30, target_temp_step:0.5, hvac_action:'cooling'}),
+  S('sensor.temp','23.8',{friendly_name:'Temperatura', unit_of_measurement:'°C', device_class:'temperature'}),
+  S('sensor.hum','64.2',{friendly_name:'Humedad', unit_of_measurement:'%', device_class:'humidity'}),
+  S('sensor.co2','941',{friendly_name:'CO2', unit_of_measurement:'ppm'}),
+  S('sensor.pm25','1',{friendly_name:'PM2.5', unit_of_measurement:'µg/m³'}),
+  S('sensor.aq','good',{friendly_name:'Calidad', device_class:'enum'}),
+  S('light.led_sofa','on',{friendly_name:'LED Sofa', supported_color_modes:['color_temp','xy'], color_mode:'xy', brightness:180, rgb_color:[64,128,255], min_color_temp_kelvin:2000, max_color_temp_kelvin:6500}),
+  S('weather.casa','partlycloudy',{friendly_name:'Jerez', temperature:31.4, apparent_temperature:33, humidity:41, wind_speed:12, wind_speed_unit:'km/h', pressure:1012, pressure_unit:'hPa', temperature_unit:'°C'}),
+  S('person.manu','home',{friendly_name:'Manu'}),
+  S('sensor.batt','85',{friendly_name:'Battery', unit_of_measurement:'%', device_class:'battery'}),
+  S('sensor.batt_state','Not Charging',{}), S('sensor.activity','Stationary',{}), S('sensor.steps','2434',{}),
+  S('switch.dw_power','on',{friendly_name:'Lavavajillas Energía'}),
+  S('sensor.dw_state','run',{friendly_name:'Lavavajillas Estado', device_class:'enum'}),
+  S('select.dw_program','dishcare_dishwasher_program_eco_50',{friendly_name:'Programa', options:['dishcare_dishwasher_program_eco_50','dishcare_dishwasher_program_auto_2','dishcare_dishwasher_program_intensiv_70']}),
+  S('sensor.dw_progress','42',{unit_of_measurement:'%'}),
+  S('sensor.dw_finish',new Date(Date.now()+5.1e6).toISOString(),{device_class:'timestamp'}),
+  S('sensor.dw_door','closed',{device_class:'enum'}),
+  S('binary_sensor.dw_remote','off',{}),
+  S('switch.dw_half','off',{friendly_name:'Lavavajillas Media carga'}), S('switch.dw_dry','on',{friendly_name:'Lavavajillas Extra seco'}), S('switch.dw_hyg','off',{friendly_name:'Lavavajillas Higiene +'}),
+  S('button.dw_stop','unknown',{}), S('button.dw_pause','unknown',{}),
+  S('todo.shopping','2',{friendly_name:'Lista de la compra'}),
+  S('binary_sensor.leak','on',{friendly_name:'Fuga de agua', device_class:'moisture'}),
+  S('binary_sensor.door','off',{friendly_name:'Puerta', device_class:'door'}),
+  S('automation.luz','on',{friendly_name:'Luz entrada'}), S('switch.pj','off',{friendly_name:'Permit join'}), S('button.z2m','unknown',{friendly_name:'Restart Z2M'}),
+  S('media_player.tv','playing',{friendly_name:'Tele', volume_level:0.35, source:'TV', source_list:['TV','HDMI'], media_title:'Un título de programa bastante largo', media_artist:'Canal', supported_features:149375}),
+  S('sensor.power','412.5',{friendly_name:'Potencia', unit_of_measurement:'W', device_class:'power'}),
+  S('sensor.energy_day','1.234',{unit_of_measurement:'kWh'}), S('sensor.energy_month','31.7',{unit_of_measurement:'kWh'}),
+  S('fan.salon','on',{friendly_name:'Ventilador', percentage:60}),
+  S('switch.despacho_luz','on',{friendly_name:'[Despacho] Luz'}), S('switch.cruz','off',{friendly_name:'[Dormitorio] Cruzamiento'}), S('fan.techo','unavailable',{friendly_name:'Ventilador Techo'}),
+]);
+const hass = { states, language:'es', locale:{language:'es'},
+  callService: async (...a) => console.log('callService', ...a),
+  formatEntityState: (e) => e.state.replace(/_/g,' ').replace(/^\w/, c=>c.toUpperCase()),
+  callWS: async (m) => m.type==='todo/item/list' ? {items:[{uid:'1',summary:'Leche',status:'needs_action'},{uid:'2',summary:'Pan integral de centeno',status:'needs_action'},{uid:'3',summary:'Huevos',status:'completed'}]} : {},
+  connection: { subscribeMessage: async (cb, msg) => { cb({forecast:[0,1,2,3,4].map(i=>({datetime:new Date(Date.now()+i*864e5).toISOString(), condition:['sunny','partlycloudy','rainy','sunny','cloudy'][i], temperature:30+i, templow:20+i, precipitation_probability:i*15}))}); return async()=>{}; } } };
+
+const CARDS = [
+  ['custom-climate-card', {entity:'climate.aire', name:'Aire acondicionado', temperature_sensor:'sensor.temp', humidity_sensor:'sensor.hum'}],
+  ['custom-weather-card', {entity:'weather.casa', name:'Jerez'}],
+  ['custom-air-quality-card', {name:'Calidad del aire · Salón', quality:'sensor.aq', co2:'sensor.co2', pm25:'sensor.pm25', temperature:'sensor.temp', humidity:'sensor.hum'}],
+  ['custom-light-card', {entity:'light.led_sofa', name:'LED sofá'}],
+  ['custom-appliance-card', {name:'Lavavajillas', icon:'mdi:dishwasher', power:'switch.dw_power', operation_state:'sensor.dw_state', program:'select.dw_program', progress:'sensor.dw_progress', finish_time:'sensor.dw_finish', door:'sensor.dw_door', remote_start:'binary_sensor.dw_remote', options:['switch.dw_half','switch.dw_dry','switch.dw_hyg'], stop_button:'button.dw_stop', pause_button:'button.dw_pause'}],
+  ['custom-person-card', {entity:'person.manu', battery:'sensor.batt', battery_state:'sensor.batt_state', activity:'sensor.activity', steps:'sensor.steps'}],
+  ['custom-todo-card', {entity:'todo.shopping'}],
+  ['custom-status-card', {name:'Seguridad y estado', entities:[{entity:'binary_sensor.leak', name:'Fuga de agua · Cocina'},'binary_sensor.door',{entity:'sensor.batt', name:'Batería iPhone'}]}],
+  ['custom-quick-actions-card', {name:'Acciones rápidas', columns:4, actions:[{entity:'automation.luz'},{entity:'switch.pj', icon:'mdi:zigbee'},{entity:'button.z2m', confirm:true},{name:'Energía', icon:'mdi:flash', navigation_path:'/energy'},{name:'Mapa', icon:'mdi:map', navigation_path:'/map'},{name:'Historial', icon:'mdi:chart', navigation_path:'/history'}]}],
+  ['custom-media-player-card', {entity:'media_player.tv', show_volume:true, show_source:true, artwork:'none'}],
+  ['custom-power-monitor-card', {entity:'sensor.power', name:'Luz ambiente · consumo', daily_energy:'sensor.energy_day', monthly_energy:'sensor.energy_month'}],
+  ['custom-sensor-gauge-card', {entity:'sensor.temp', name:'Temperatura', unit:'°C', min:10, max:40, style:'circular', thresholds:[{value:10,color:'#89b4fa'},{value:20,color:'#a6e3a1'},{value:26,color:'#f9e2af'}]}],
+  ['custom-button-card', {entity:'fan.salon', name:'Ventilador de techo', show_state:true}],
+  ['custom-room-overview-card', {name:'Dormitorio principal', icon:'mdi:bed', navigation_path:'/x', temperature_sensor:'sensor.temp', humidity_sensor:'sensor.hum', lights:['switch.despacho_luz','switch.cruz'], fans:['fan.techo'], climate:['climate.aire']}],
+];
+const WIDTHS = (new URLSearchParams(location.search).get('w') || '160,240,343,520').split(',').map(Number);
+const root = document.getElementById('root');
+for (const [tag, cfg] of CARDS) {
+  const row = document.createElement('div'); row.className='row';
+  for (const w of WIDTHS) {
+    const col = document.createElement('div'); col.className='col'; col.style.width = w+'px';
+    col.innerHTML = `<div class="label">${tag} @ ${w}px</div>`;
+    const el = document.createElement(tag); el.setConfig({type:'custom:'+tag, ...cfg}); el.hass = hass;
+    col.appendChild(el); row.appendChild(col);
+  }
+  root.appendChild(row);
+}
+window.__ready = true;
+</script>
+</body>
+</html>

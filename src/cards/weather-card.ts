@@ -134,6 +134,17 @@ export class WeatherCard extends LitElement {
         color: var(--info-color, #2196f3);
         font-size: 0.65rem;
       }
+      @container card (max-width: 380px) {
+        .hero ha-icon.big {
+          --mdc-icon-size: 44px;
+        }
+        .temp {
+          font-size: 2rem;
+        }
+        .day {
+          flex-basis: 52px;
+        }
+      }
     `,
   ];
 

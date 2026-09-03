@@ -110,6 +110,11 @@ export class PersonCard extends LitElement {
       .meta .low {
         color: var(--error-color, #f44336);
       }
+      @container card (max-width: 220px) {
+        .presence .since {
+          white-space: normal;
+        }
+      }
       .location {
         font-size: 0.78rem;
         color: var(--secondary-text-color);

@@ -26,6 +26,20 @@ so it sizes itself sensibly inside **sections** views.
 | Lock Card | `custom-lock-card` | Smart lock with optional unlock confirmation |
 | Power Monitor Card | `custom-power-monitor-card` | Current power draw with optional daily and monthly energy |
 
+## Responsive behaviour
+
+Cards adapt to **their own width**, not the viewport, using CSS container queries
+(`container-type: inline-size` on `ha-card`). That means the same card behaves well whether it is a
+narrow 3‑column card on a desktop sections view or a full‑width card on a phone:
+
+- ≤ 380 px: tighter padding, sensor tiles collapse to two columns, icon tiles get denser, the room
+  overview drops its temperature/humidity pills under the title, the climate hero shrinks.
+- ≤ 260 px: pill labels hide (icons only), sensor tiles go single column, headers wrap.
+- Titles clamp to two lines instead of truncating; forecast rows scroll horizontally.
+
+`npm run shots` renders every card at 160/240/343/520 px in headless Chromium against a mock `hass`
+(`test/harness.html`) and reports any element that overflows its card — run it after style changes.
+
 ## Development
 
 ```bash
@@ -34,6 +48,7 @@ npm run build          # produces dist/custom-ha-cards.js
 npm run dev            # watch mode with HMR
 npm run typecheck      # TypeScript type checking
 npm run format         # prettier
+npm run shots          # responsive screenshots + overflow check (needs playwright + chromium)
 ```
 
 Shared building blocks live in `src/helpers.ts` (`defineEditor()` for ha-form editors, `sharedStyles`

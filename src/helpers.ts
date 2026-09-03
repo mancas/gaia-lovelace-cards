@@ -175,6 +175,9 @@ export const sharedStyles = css`
     display: flex;
     flex-direction: column;
     gap: 12px;
+    container-type: inline-size;
+    container-name: card;
+    overflow: hidden;
   }
   .header {
     display: flex;
@@ -188,8 +191,10 @@ export const sharedStyles = css`
     flex: 1;
     min-width: 0;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-height: 1.25;
   }
   .header .subtitle {
     font-size: 0.78rem;
@@ -368,5 +373,39 @@ export const sharedStyles = css`
     accent-color: var(--cc-accent);
     cursor: pointer;
     margin: 0;
+  }
+
+  /* ---- Narrow card (phone, or a 3–4 column card on desktop) ---- */
+  @container card (max-width: 380px) {
+    ha-card {
+      padding: 14px;
+      gap: 10px;
+    }
+    .sensor-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .tile-grid {
+      grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+    }
+    .pill {
+      padding: 5px 10px;
+      font-size: 0.74rem;
+    }
+    .icon-bubble {
+      width: 36px;
+      height: 36px;
+    }
+  }
+  @container card (max-width: 260px) {
+    .header {
+      flex-wrap: wrap;
+    }
+    .sensor-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .pill span,
+    .pill-label {
+      display: none;
+    }
   }
 `;

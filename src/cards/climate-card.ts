@@ -193,6 +193,28 @@ export class ClimateCard extends LitElement {
       .off .target .value {
         color: var(--secondary-text-color);
       }
+      @container card (max-width: 380px) {
+        .target .value {
+          font-size: 2.2rem;
+        }
+        .stepper button {
+          width: 40px;
+          height: 40px;
+        }
+        .sensors {
+          flex-basis: 100%;
+          order: 3;
+        }
+        .header {
+          flex-wrap: wrap;
+        }
+      }
+      @container card (max-width: 260px) {
+        .hero {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
     `,
   ];
 
@@ -352,7 +374,7 @@ export class ClimateCard extends LitElement {
                     @click=${() => this._setMode(m)}
                     title=${mm.label}
                   >
-                    <ha-icon icon=${mm.icon}></ha-icon>${mm.label}
+                    <ha-icon icon=${mm.icon}></ha-icon><span>${mm.label}</span>
                   </button>`;
                 })}
               </div>`
@@ -368,7 +390,7 @@ export class ClimateCard extends LitElement {
                       class="pill ${f === fanMode ? 'active' : ''}"
                       @click=${() => this._setFan(f)}
                     >
-                      <ha-icon icon=${fm.icon}></ha-icon>${fm.label}
+                      <ha-icon icon=${fm.icon}></ha-icon><span>${fm.label}</span>
                     </button>`;
                   })}
                 </div>`

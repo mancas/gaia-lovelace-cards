@@ -65,6 +65,11 @@ export class QuickActionsCard extends LitElement {
         border-radius: inherit;
         border: 2px dashed var(--warning-color, #ff9800);
       }
+      @container card (max-width: 380px) {
+        .grid {
+          grid-template-columns: repeat(auto-fill, minmax(74px, 1fr));
+        }
+      }
     `,
   ];
 

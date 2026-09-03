@@ -56,7 +56,11 @@ export class RoomOverviewCard extends LitElement {
       display: block;
     }
     ha-card {
+      display: block;
       padding: 16px;
+      container-type: inline-size;
+      container-name: card;
+      overflow: hidden;
     }
     .header {
       display: flex;
@@ -64,6 +68,7 @@ export class RoomOverviewCard extends LitElement {
       justify-content: space-between;
       margin-bottom: 16px;
       gap: 8px;
+      min-width: 0;
     }
     .header.link {
       cursor: pointer;
@@ -75,10 +80,18 @@ export class RoomOverviewCard extends LitElement {
       align-items: center;
       gap: 8px;
       min-width: 0;
+      flex: 1;
+    }
+    .room-name span {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     .room-name ha-icon {
       --mdc-icon-size: 22px;
       color: var(--primary-color, #03a9f4);
+      flex-shrink: 0;
     }
     .room-name .chevron {
       --mdc-icon-size: 18px;
@@ -87,20 +100,22 @@ export class RoomOverviewCard extends LitElement {
     }
     .sensors {
       display: flex;
-      gap: 12px;
+      gap: 6px;
       align-items: center;
-    }
-    .sensor-pill ha-icon {
-      --mdc-icon-size: 16px;
+      flex-shrink: 0;
     }
     .sensor-pill {
       display: flex;
       align-items: center;
-      gap: 4px;
-      font-size: 0.85rem;
+      gap: 3px;
+      font-size: 0.8rem;
       background: var(--secondary-background-color, rgba(0, 0, 0, 0.06));
-      padding: 4px 10px;
+      padding: 3px 8px;
       border-radius: 16px;
+      white-space: nowrap;
+    }
+    .sensor-pill ha-icon {
+      --mdc-icon-size: 16px;
     }
     .section-label {
       font-size: 0.75rem;
@@ -152,6 +167,28 @@ export class RoomOverviewCard extends LitElement {
     .climate-tile {
       min-width: 0;
     }
+
+    /* Narrow card: pills drop under the title, tiles get denser */
+    @container card (max-width: 380px) {
+      ha-card {
+        padding: 14px;
+      }
+      .header {
+        flex-wrap: wrap;
+        margin-bottom: 12px;
+      }
+      .room-name {
+        flex-basis: 100%;
+      }
+      .entity-grid {
+        grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+      }
+    }
+    @container card (max-width: 220px) {
+      .sensors {
+        flex-wrap: wrap;
+      }
+    }
   `;
 
   setConfig(config: RoomOverviewCardConfig) {
@@ -197,7 +234,8 @@ export class RoomOverviewCard extends LitElement {
   private _sensorValue(entityId: string | undefined, unit = ''): string {
     if (!entityId) return '';
     const v = this.hass?.states[entityId]?.state;
-    return v ? `${parseFloat(v).toFixed(1)}${unit}` : '—';
+    const n = parseFloat(v ?? '');
+    return Number.isFinite(n) ? `${Math.round(n)}${unit}` : '—';
   }
 
   private _renderTile(entityId: string, icon: string) {
@@ -268,7 +306,7 @@ export class RoomOverviewCard extends LitElement {
       humidity_sensor,
       navigation_path,
     } = this._config;
-    const temp = this._sensorValue(temperature_sensor, '°C');
+    const temp = this._sensorValue(temperature_sensor, '°');
     const hum = this._sensorValue(humidity_sensor, '%');
 
     return html`
