@@ -1,0 +1,9 @@
+repos:
+  - repo: local
+    hooks:
+      - id: prettier
+        name: prettier
+        entry: npx prettier --write
+        language: system
+        types_or: [ts, javascript, json, yaml, markdown, css, html]
+        exclude: ^(dist/|node_modules/)
