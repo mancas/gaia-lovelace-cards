@@ -90,6 +90,9 @@ export class RoomOverviewCard extends LitElement {
       gap: 12px;
       align-items: center;
     }
+    .sensor-pill ha-icon {
+      --mdc-icon-size: 16px;
+    }
     .sensor-pill {
       display: flex;
       align-items: center;

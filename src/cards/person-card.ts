@@ -75,15 +75,21 @@ export class PersonCard extends LitElement {
         border: 2px solid var(--card-background-color, #fff);
       }
       .presence {
-        display: inline-flex;
+        display: flex;
+        flex-wrap: wrap;
         align-items: center;
-        gap: 4px;
+        gap: 2px 4px;
         font-size: 0.8rem;
         color: var(--presence-color);
         font-weight: 500;
       }
       .presence ha-icon {
         --mdc-icon-size: 16px;
+      }
+      .presence .since {
+        color: var(--secondary-text-color);
+        font-weight: 400;
+        white-space: nowrap;
       }
       .meta {
         display: flex;
@@ -132,7 +138,7 @@ export class PersonCard extends LitElement {
   }
 
   getGridOptions(): GridOptions {
-    return { columns: 6, rows: 2, min_columns: 4, min_rows: 1 };
+    return { columns: 12, rows: 'auto', min_columns: 6 };
   }
 
   render() {
@@ -175,7 +181,7 @@ export class PersonCard extends LitElement {
             <div class="title">${name}</div>
             <div class="presence">
               <ha-icon icon=${presenceIcon}></ha-icon
-              >${presenceLabel}${since ? html`<span style="color:var(--secondary-text-color);font-weight:400"> · ${since}</span>` : nothing}
+              >${presenceLabel}${since ? html`<span class="since">· ${since}</span>` : nothing}
             </div>
           </div>
         </div>

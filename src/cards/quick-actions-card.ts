@@ -90,7 +90,7 @@ export class QuickActionsCard extends LitElement {
   }
 
   getGridOptions(): GridOptions {
-    return { columns: 6, rows: 'auto', min_columns: 3 };
+    return { columns: 12, rows: 'auto', min_columns: 6 };
   }
 
   private _armed = new Map<number, number>();

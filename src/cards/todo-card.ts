@@ -173,7 +173,7 @@ export class TodoCard extends LitElement {
   }
 
   getGridOptions(): GridOptions {
-    return { columns: 6, rows: 'auto', min_columns: 4 };
+    return { columns: 12, rows: 'auto', min_columns: 6 };
   }
 
   protected updated(changed: PropertyValues) {

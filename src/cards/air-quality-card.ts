@@ -85,7 +85,7 @@ export class AirQualityCard extends LitElement {
         --mdc-icon-size: 18px;
       }
       .sensor-tile {
-        border-left: 3px solid var(--tile-color, transparent);
+        border-left: 3px solid var(--tile-border, transparent);
         cursor: pointer;
       }
       .sensor-tile .value {
@@ -134,7 +134,7 @@ export class AirQualityCard extends LitElement {
   }
 
   getGridOptions(): GridOptions {
-    return { columns: 6, rows: 'auto', min_columns: 4 };
+    return { columns: 12, rows: 'auto', min_columns: 6 };
   }
 
   private _tile(
@@ -147,11 +147,12 @@ export class AirQualityCard extends LitElement {
   ) {
     if (!entityId) return nothing;
     const v = numericState(this.hass, entityId);
-    const color = level ? LEVEL_COLOR[level] : 'transparent';
+    const color = level ? LEVEL_COLOR[level] : 'var(--primary-text-color)';
+    const border = level ? LEVEL_COLOR[level] : 'transparent';
     const pct = max != null && v != null ? Math.min(100, (v / max) * 100) : undefined;
     return html`<div
       class="sensor-tile"
-      style="--tile-color:${color}"
+      style="--tile-color:${color};--tile-border:${border}"
       @click=${() => fireMoreInfo(this, entityId)}
     >
       <div class="label">${label}</div>

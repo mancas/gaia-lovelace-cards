@@ -214,7 +214,7 @@ export class ApplianceCard extends LitElement {
   }
 
   getGridOptions(): GridOptions {
-    return { columns: 6, rows: 'auto', min_columns: 4 };
+    return { columns: 12, rows: 'auto', min_columns: 6 };
   }
 
   connectedCallback() {
