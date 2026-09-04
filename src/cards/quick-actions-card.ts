@@ -10,10 +10,20 @@ import {
   isUnavailable,
 } from '../helpers.js';
 
-defineEditor('custom-quick-actions-card-editor', [
-  { name: 'name', selector: { text: {} } },
-  { name: 'columns', selector: { number: { min: 2, max: 8, mode: 'box' } } },
-]);
+defineEditor(
+  'custom-quick-actions-card-editor',
+  [
+    { name: 'name', selector: { text: {} } },
+    { name: 'columns', selector: { number: { min: 2, max: 8, mode: 'box' } } },
+    { name: 'actions', required: true, selector: { object: {} } },
+  ],
+  {
+    helpers: {
+      actions:
+        'One entry per tile: entity, name, icon, service, service_data, navigation_path, confirm',
+    },
+  },
+);
 
 const DOMAIN_DEFAULTS: Record<string, { service: string; icon: string }> = {
   script: { service: 'script.turn_on', icon: 'mdi:script-text-play' },

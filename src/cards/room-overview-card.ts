@@ -1,51 +1,35 @@
 import { LitElement, html, css, nothing } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import type { HomeAssistant, RoomOverviewCardConfig, GridOptions } from '../types.js';
-import { navigate } from '../helpers.js';
+import { navigate, defineEditor } from '../helpers.js';
 
-const SCHEMA = [
-  { name: 'name', required: true, selector: { text: {} } },
-  { name: 'icon', selector: { icon: {} } },
-  { name: 'navigation_path', selector: { text: {} } },
+defineEditor(
+  'custom-room-overview-card-editor',
+  [
+    { name: 'name', required: true, selector: { text: {} } },
+    { name: 'icon', selector: { icon: {} } },
+    { name: 'navigation_path', selector: { text: {} } },
+    {
+      name: 'temperature_sensor',
+      selector: { entity: { domain: 'sensor', device_class: 'temperature' } },
+    },
+    {
+      name: 'humidity_sensor',
+      selector: { entity: { domain: 'sensor', device_class: 'humidity' } },
+    },
+    { name: 'lights', selector: { entity: { domain: ['light', 'switch'], multiple: true } } },
+    { name: 'switches', selector: { entity: { domain: 'switch', multiple: true } } },
+    { name: 'fans', selector: { entity: { domain: 'fan', multiple: true } } },
+    { name: 'climate', selector: { entity: { domain: 'climate', multiple: true } } },
+  ],
   {
-    name: 'temperature_sensor',
-    selector: { entity: { domain: 'sensor', device_class: 'temperature' } },
+    helpers: {
+      navigation_path: 'Where tapping the header goes, e.g. /lovelace/salon',
+      lights: 'Switches wired to lamps belong here too',
+      switches: 'Plugs and relays, shown in their own section',
+    },
   },
-  { name: 'humidity_sensor', selector: { entity: { domain: 'sensor', device_class: 'humidity' } } },
-  { name: 'lights', selector: { entity: { domain: ['light', 'switch'], multiple: true } } },
-  { name: 'switches', selector: { entity: { domain: 'switch', multiple: true } } },
-  { name: 'fans', selector: { entity: { domain: 'fan', multiple: true } } },
-  { name: 'climate', selector: { entity: { domain: 'climate', multiple: true } } },
-];
-
-class RoomOverviewCardEditor extends LitElement {
-  @property({ attribute: false }) hass!: HomeAssistant;
-  @state() private _config!: RoomOverviewCardConfig;
-
-  set config(config: RoomOverviewCardConfig) {
-    this._config = config;
-  }
-
-  render() {
-    return html`<ha-form
-      .hass=${this.hass}
-      .data=${this._config}
-      .schema=${SCHEMA}
-      @value-changed=${this._valueChanged}
-    ></ha-form>`;
-  }
-
-  private _valueChanged(ev: CustomEvent) {
-    this.dispatchEvent(
-      new CustomEvent('config-changed', {
-        detail: { config: (ev as CustomEvent<{ value: RoomOverviewCardConfig }>).detail.value },
-        bubbles: true,
-        composed: true,
-      }),
-    );
-  }
-}
-customElements.define('custom-room-overview-card-editor', RoomOverviewCardEditor);
+);
 
 export class RoomOverviewCard extends LitElement {
   @property({ attribute: false }) hass!: HomeAssistant;

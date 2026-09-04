@@ -12,6 +12,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "shots": "node test/shoot.mjs",
+    "test:editors": "npm run build && node test/editors.mjs",
     "pre-commit": "pretty-quick --staged",
     "release": "bash scripts/release.sh"
   },

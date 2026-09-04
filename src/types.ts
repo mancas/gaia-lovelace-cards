@@ -287,6 +287,7 @@ declare global {
       data: unknown;
       schema: unknown[];
       computeLabel?: (schema: { name: string }) => string;
+      computeHelper?: (schema: { name: string }) => string;
     };
   }
 }

@@ -1,46 +1,29 @@
 import { LitElement, html, css, nothing } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import type { HomeAssistant, ButtonCardConfig, GridOptions } from '../types.js';
+import { defineEditor } from '../helpers.js';
 
-const SCHEMA = [
-  { name: 'entity', required: true, selector: { entity: {} } },
-  { name: 'name', selector: { text: {} } },
-  { name: 'icon', selector: { icon: {} } },
+defineEditor(
+  'custom-button-card-editor',
+  [
+    { name: 'entity', required: true, selector: { entity: {} } },
+    { name: 'name', selector: { text: {} } },
+    { name: 'icon', selector: { icon: {} } },
+    {
+      name: 'tap_action',
+      selector: { select: { mode: 'dropdown', options: ['toggle', 'more-info', 'call-service'] } },
+    },
+    { name: 'service', selector: { text: {} } },
+    { name: 'service_data', selector: { object: {} } },
+    { name: 'show_state', selector: { boolean: {} } },
+  ],
   {
-    name: 'tap_action',
-    selector: { select: { options: ['toggle', 'more-info', 'call-service'] } },
+    helpers: {
+      service: 'Only for "call-service" — e.g. script.turn_on',
+      service_data: 'Data passed to the service call',
+    },
   },
-  { name: 'show_state', selector: { boolean: {} } },
-];
-
-class ButtonCardEditor extends LitElement {
-  @property({ attribute: false }) hass!: HomeAssistant;
-  @state() private _config!: ButtonCardConfig;
-
-  set config(config: ButtonCardConfig) {
-    this._config = config;
-  }
-
-  render() {
-    return html`<ha-form
-      .hass=${this.hass}
-      .data=${this._config}
-      .schema=${SCHEMA}
-      @value-changed=${this._valueChanged}
-    ></ha-form>`;
-  }
-
-  private _valueChanged(ev: CustomEvent) {
-    this.dispatchEvent(
-      new CustomEvent('config-changed', {
-        detail: { config: (ev as CustomEvent<{ value: ButtonCardConfig }>).detail.value },
-        bubbles: true,
-        composed: true,
-      }),
-    );
-  }
-}
-customElements.define('custom-button-card-editor', ButtonCardEditor);
+);
 
 export class ButtonCard extends LitElement {
   @property({ attribute: false }) hass!: HomeAssistant;

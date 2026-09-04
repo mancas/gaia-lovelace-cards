@@ -1,43 +1,21 @@
 import { LitElement, html, css, nothing } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import type { HomeAssistant, MediaPlayerCardConfig } from '../types.js';
+import { defineEditor } from '../helpers.js';
 
-const SCHEMA = [
+defineEditor('custom-media-player-card-editor', [
   { name: 'entity', required: true, selector: { entity: { domain: 'media_player' } } },
   { name: 'name', selector: { text: {} } },
-  { name: 'show_volume', selector: { boolean: {} } },
-  { name: 'show_source', selector: { boolean: {} } },
-  { name: 'artwork', selector: { select: { options: ['cover', 'none'] } } },
-];
-
-class MediaPlayerCardEditor extends LitElement {
-  @property({ attribute: false }) hass!: HomeAssistant;
-  @state() private _config!: MediaPlayerCardConfig;
-
-  set config(config: MediaPlayerCardConfig) {
-    this._config = config;
-  }
-
-  render() {
-    return html`<ha-form
-      .hass=${this.hass}
-      .data=${this._config}
-      .schema=${SCHEMA}
-      @value-changed=${this._valueChanged}
-    ></ha-form>`;
-  }
-
-  private _valueChanged(ev: CustomEvent) {
-    this.dispatchEvent(
-      new CustomEvent('config-changed', {
-        detail: { config: (ev as CustomEvent<{ value: MediaPlayerCardConfig }>).detail.value },
-        bubbles: true,
-        composed: true,
-      }),
-    );
-  }
-}
-customElements.define('custom-media-player-card-editor', MediaPlayerCardEditor);
+  {
+    type: 'grid',
+    name: '',
+    schema: [
+      { name: 'show_volume', selector: { boolean: {} } },
+      { name: 'show_source', selector: { boolean: {} } },
+    ],
+  },
+  { name: 'artwork', selector: { select: { mode: 'dropdown', options: ['cover', 'none'] } } },
+]);
 
 export class MediaPlayerCard extends LitElement {
   @property({ attribute: false }) hass!: HomeAssistant;

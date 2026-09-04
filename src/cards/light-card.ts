@@ -23,6 +23,7 @@ defineEditor('custom-light-card-editor', [
       { name: 'show_color', selector: { boolean: {} } },
     ],
   },
+  { name: 'color_presets', selector: { object: {} } },
 ]);
 
 const DEFAULT_PRESETS: Array<{ name: string; rgb: [number, number, number] }> = [

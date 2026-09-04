@@ -28,6 +28,8 @@ defineEditor('custom-appliance-card-editor', [
   { name: 'pause_button', selector: { entity: { domain: 'button' } } },
   { name: 'resume_button', selector: { entity: { domain: 'button' } } },
   { name: 'options', selector: { entity: { domain: 'switch', multiple: true } } },
+  { name: 'active_program', selector: { entity: { domain: 'sensor' } } },
+  { name: 'program_labels', selector: { object: {} } },
 ]);
 
 const STATE_META: Record<string, { icon: string; color: string; active?: boolean }> = {

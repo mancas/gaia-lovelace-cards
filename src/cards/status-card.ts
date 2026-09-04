@@ -18,12 +18,25 @@ import {
   isUnavailable,
 } from '../helpers.js';
 
-defineEditor('custom-status-card-editor', [
-  { name: 'name', selector: { text: {} } },
-  { name: 'layout', selector: { select: { mode: 'dropdown', options: ['list', 'grid'] } } },
-  { name: 'show_last_changed', selector: { boolean: {} } },
-  { name: 'entities', selector: { entity: { multiple: true } } },
-]);
+defineEditor(
+  'custom-status-card-editor',
+  [
+    { name: 'name', selector: { text: {} } },
+    { name: 'layout', selector: { select: { mode: 'dropdown', options: ['list', 'grid'] } } },
+    { name: 'show_last_changed', selector: { boolean: {} } },
+    { name: 'entities', required: true, selector: { entity: { multiple: true } } },
+  ],
+  {
+    guard: (config) => {
+      // Per-entity overrides (name/icon/attention_state) cannot be expressed by an
+      // entity picker; hand those configs to the YAML editor rather than flatten them.
+      const entities = config['entities'];
+      if (Array.isArray(entities) && entities.some((e) => typeof e === 'object' && e !== null)) {
+        throw new Error('status-card: per-entity overrides are edited in YAML');
+      }
+    },
+  },
+);
 
 /** binary_sensor device classes where "on" means something needs attention */
 const ON_IS_ATTENTION = new Set([

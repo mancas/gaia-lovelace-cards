@@ -31,12 +31,18 @@ defineEditor(
     { name: 'show_comfort', selector: { boolean: {} } },
   ],
   {
-    style: 'Visual style',
-    co2: 'CO₂ sensor',
-    pm25: 'PM2.5 sensor',
-    voc: 'VOC sensor',
-    quality: 'Air quality (enum) sensor',
-    show_comfort: 'Show temperature & humidity',
+    labels: {
+      style: 'Visual style',
+      co2: 'CO₂ sensor',
+      pm25: 'PM2.5 sensor',
+      voc: 'VOC sensor',
+      quality: 'Air quality (enum) sensor',
+      show_comfort: 'Show temperature & humidity',
+    },
+    helpers: {
+      style: 'scale: one bar per pollutant · hero: single verdict · tiles: value grid',
+      thresholds: 'Custom thresholds stay editable in YAML',
+    },
   },
 );
 

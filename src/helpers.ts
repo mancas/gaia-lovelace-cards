@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html, css, nothing } from 'lit';
 import { property, state } from 'lit/decorators.js';
 import type { HomeAssistant, HassEntity } from './types.js';
 
@@ -8,34 +8,70 @@ import type { HomeAssistant, HassEntity } from './types.js';
 
 export type FormSchema = Array<Record<string, unknown>>;
 
+export interface EditorOptions {
+  /** Overrides for the auto-prettified field labels */
+  labels?: Record<string, string>;
+  /** Helper text shown under a field */
+  helpers?: Record<string, string>;
+  /**
+   * Throw from here to tell Home Assistant this particular config cannot be
+   * represented by the form — HA then falls back to the YAML editor instead of
+   * silently rewriting keys the schema does not model.
+   */
+  guard?: (config: Record<string, unknown>) => void;
+}
+
 /**
  * Registers `<tagName>` as a simple ha-form editor bound to the given schema.
- * Complex list configs (actions, entities…) stay YAML‑only, which the schema
- * simply omits — HA keeps unknown keys untouched while editing.
+ *
+ * The element implements the contract Home Assistant expects of a card editor:
+ * a `setConfig(config)` method, a `hass` property, and a bubbling
+ * `config-changed` event. Keys the schema does not model are preserved,
+ * because ha-form emits the whole data object it was given.
  */
-export function defineEditor(tagName: string, schema: FormSchema, labels?: Record<string, string>) {
+export function defineEditor(tagName: string, schema: FormSchema, options: EditorOptions = {}) {
   if (customElements.get(tagName)) return;
+  const { labels, helpers, guard } = options;
 
   class GenericEditor extends LitElement {
     @property({ attribute: false }) hass!: HomeAssistant;
     @state() private _config: Record<string, unknown> = {};
 
-    set config(config: Record<string, unknown>) {
-      this._config = config;
+    static styles = css`
+      ha-form {
+        display: block;
+      }
+    `;
+
+    /** Called by HA's `hui-element-editor` every time the config changes. */
+    setConfig(config: Record<string, unknown>) {
+      guard?.(config);
+      this._config = config ?? {};
     }
 
     render() {
+      if (!this.hass) return nothing;
       return html`<ha-form
         .hass=${this.hass}
         .data=${this._config}
         .schema=${schema}
         .computeLabel=${(s: { name: string }) => labels?.[s.name] ?? prettify(s.name)}
+        .computeHelper=${(s: { name: string }) => helpers?.[s.name] ?? ''}
         @value-changed=${this._valueChanged}
       ></ha-form>`;
     }
 
     private _valueChanged(ev: Event) {
-      const value = (ev as CustomEvent<{ value: Record<string, unknown> }>).detail.value;
+      // Keep the raw ha-form event inside the editor; HA listens for `config-changed`.
+      ev.stopPropagation();
+      const value = { ...(ev as CustomEvent<{ value: Record<string, unknown> }>).detail.value };
+      // Clearing a field leaves an empty string / empty list behind. Drop those
+      // so the stored config stays as terse as a hand-written one.
+      for (const [key, v] of Object.entries(value)) {
+        if (v === '' || v === undefined || v === null || (Array.isArray(v) && v.length === 0)) {
+          delete value[key];
+        }
+      }
       this.dispatchEvent(
         new CustomEvent('config-changed', {
           detail: { config: value },
