@@ -138,8 +138,13 @@ export class RoomOverviewCard extends LitElement {
       border-radius: 12px;
       background: var(--secondary-background-color, rgba(0, 0, 0, 0.06));
       cursor: pointer;
-      transition: background 0.2s;
+      transition:
+        background 0.2s,
+        transform 0.15s ease;
       min-width: 0;
+    }
+    .entity-tile:hover {
+      transform: scale(1.04);
     }
     .entity-tile.active {
       background: var(--custom-room-active-bg, var(--primary-color, #03a9f4));

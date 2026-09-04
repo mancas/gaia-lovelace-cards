@@ -47,6 +47,10 @@ export class QuickActionsCard extends LitElement {
       .tile {
         padding: 12px 6px;
         position: relative;
+        transition: transform 0.15s ease;
+      }
+      .tile:hover {
+        transform: scale(1.04);
       }
       .tile.pressed {
         background: var(--cc-accent);

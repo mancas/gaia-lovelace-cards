@@ -319,6 +319,10 @@ export class AirQualityCard extends LitElement {
         font-size: 0.8rem;
         min-width: 0;
         cursor: pointer;
+        transition: transform 0.15s ease;
+      }
+      .chip:hover {
+        transform: scale(1.04);
       }
       .chip .dot {
         width: 7px;
@@ -351,6 +355,10 @@ export class AirQualityCard extends LitElement {
         padding: 11px 12px;
         min-width: 0;
         cursor: pointer;
+        transition: transform 0.15s ease;
+      }
+      .qtile:hover {
+        transform: scale(1.04);
       }
       .qtile .k {
         font-size: 0.72rem;
