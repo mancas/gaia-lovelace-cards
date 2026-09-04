@@ -130,6 +130,9 @@ export class RoomOverviewCard extends LitElement {
     .entity-tile:hover {
       transform: scale(1.04);
     }
+    .entity-tile:active {
+      transform: scale(0.95);
+    }
     .entity-tile.active {
       background: var(--custom-room-active-bg, var(--primary-color, #03a9f4));
       color: var(--text-primary-color, #fff);

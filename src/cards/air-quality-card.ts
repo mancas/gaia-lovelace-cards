@@ -330,6 +330,9 @@ export class AirQualityCard extends LitElement {
       .chip:hover {
         transform: scale(1.04);
       }
+      .chip:active {
+        transform: scale(0.95);
+      }
       .chip .dot {
         width: 7px;
         height: 7px;
@@ -365,6 +368,9 @@ export class AirQualityCard extends LitElement {
       }
       .qtile:hover {
         transform: scale(1.04);
+      }
+      .qtile:active {
+        transform: scale(0.95);
       }
       .qtile .k {
         font-size: 0.72rem;

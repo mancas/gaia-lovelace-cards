@@ -69,7 +69,15 @@ export class LockCard extends LitElement {
       cursor: pointer;
       font-size: 0.9rem;
       font-weight: 600;
-      transition: opacity 0.2s;
+      transition:
+        opacity 0.2s,
+        transform 0.1s;
+    }
+    .action-btn:hover {
+      transform: scale(1.04);
+    }
+    .action-btn:active {
+      transform: scale(0.95);
     }
     .action-btn.lock-btn {
       background: var(--custom-lock-locked-color, var(--primary-color, #03a9f4));

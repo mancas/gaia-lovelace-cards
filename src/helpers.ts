@@ -279,8 +279,15 @@ export const sharedStyles = css`
     gap: 4px;
     transition:
       background 0.15s,
-      color 0.15s;
+      color 0.15s,
+      transform 0.1s;
     white-space: nowrap;
+  }
+  .pill:hover {
+    transform: scale(1.04);
+  }
+  .pill:active {
+    transform: scale(0.95);
   }
   .pill ha-icon {
     --mdc-icon-size: 16px;
@@ -333,10 +340,17 @@ export const sharedStyles = css`
     min-width: 0;
     transition:
       background 0.2s,
-      color 0.2s;
+      color 0.2s,
+      transform 0.15s;
     color: var(--secondary-text-color);
     border: none;
     font: inherit;
+  }
+  .tile:hover {
+    transform: scale(1.04);
+  }
+  .tile:active {
+    transform: scale(0.95);
   }
   .tile.active {
     background: var(--cc-accent-soft);

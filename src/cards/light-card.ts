@@ -111,6 +111,9 @@ export class LightCard extends LitElement {
       .swatch:hover {
         transform: scale(1.1);
       }
+      .swatch:active {
+        transform: scale(0.9);
+      }
       .swatch.selected {
         border-color: var(--primary-text-color);
       }

@@ -48,7 +48,15 @@ export class ButtonCard extends LitElement {
       overflow: hidden;
       container-type: inline-size;
       container-name: card;
-      transition: background-color 0.2s ease;
+      transition:
+        background-color 0.2s ease,
+        transform 0.15s ease;
+    }
+    ha-card:hover {
+      transform: scale(1.02);
+    }
+    ha-card:active {
+      transform: scale(0.97);
     }
     ha-card.active {
       background-color: var(--custom-button-card-active-bg, var(--primary-color, #03a9f4));
