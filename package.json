@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "shots": "node test/shoot.mjs"
+    "shots": "node test/shoot.mjs",
+    "release": "bash scripts/release.sh"
   },
   "dependencies": {
     "lit": "^3.2.1"

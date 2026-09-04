@@ -1,6 +1,6 @@
 import { LitElement, html, css, nothing } from 'lit';
 import { property, state } from 'lit/decorators.js';
-import type { HomeAssistant, ButtonCardConfig } from '../types.js';
+import type { HomeAssistant, ButtonCardConfig, GridOptions } from '../types.js';
 
 const SCHEMA = [
   { name: 'entity', required: true, selector: { entity: {} } },
@@ -49,14 +49,22 @@ export class ButtonCard extends LitElement {
   static styles = css`
     :host {
       display: block;
+      height: 100%;
     }
     ha-card {
       cursor: pointer;
-      padding: 16px;
+      padding: 12px;
+      box-sizing: border-box;
+      height: 100%;
+      min-height: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 8px;
+      justify-content: center;
+      gap: 6px;
+      overflow: hidden;
+      container-type: inline-size;
+      container-name: card;
       transition: background-color 0.2s ease;
     }
     ha-card.active {
@@ -68,8 +76,9 @@ export class ButtonCard extends LitElement {
       pointer-events: none;
     }
     .icon-container {
-      width: 48px;
-      height: 48px;
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -77,17 +86,27 @@ export class ButtonCard extends LitElement {
       background-color: var(--secondary-background-color, rgba(0, 0, 0, 0.06));
     }
     ha-icon {
-      --mdc-icon-size: var(--custom-button-card-icon-size, 28px);
+      --mdc-icon-size: var(--custom-button-card-icon-size, 24px);
     }
     .name {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       font-weight: 500;
+      line-height: 1.2;
       text-align: center;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     .state-label {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
+      line-height: 1.2;
       opacity: 0.75;
       text-align: center;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     .fan-speed {
       width: 100%;
@@ -105,6 +124,19 @@ export class ButtonCard extends LitElement {
     .fan-speed ha-icon {
       flex-shrink: 0;
     }
+    @container card (max-width: 120px) {
+      ha-card {
+        padding: 8px;
+        gap: 4px;
+      }
+      .icon-container {
+        width: 32px;
+        height: 32px;
+      }
+      ha-icon {
+        --mdc-icon-size: 20px;
+      }
+    }
   `;
 
   setConfig(config: ButtonCardConfig) {
@@ -118,6 +150,14 @@ export class ButtonCard extends LitElement {
 
   static getStubConfig(): Omit<ButtonCardConfig, 'type'> {
     return { entity: 'light.living_room', name: 'Living Room', show_state: true };
+  }
+
+  getCardSize() {
+    return 2;
+  }
+
+  getGridOptions(): GridOptions {
+    return { columns: 6, rows: 2, min_columns: 3, min_rows: 2 };
   }
 
   private get _entity() {

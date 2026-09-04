@@ -239,9 +239,10 @@ export class WeatherCard extends LitElement {
     const attrs = entity?.attributes ?? {};
     const unavailable = isUnavailable(entity);
     const condition = entity?.state;
+    const current = this._forecast.find((f) => f.datetime === attrs['forecast_time']);
     const meta = condition ? CONDITION_META[condition] : undefined;
     const name = friendlyName(this.hass, this._config.entity, this._config.name);
-    const temp = attrs['temperature'] as number | undefined;
+    const temp = current?.temperature ?? (attrs['temperature'] as number | undefined);
     const unit = (attrs['temperature_unit'] as string | undefined) ?? '°C';
     const apparent = attrs['apparent_temperature'] as number | undefined;
     const humidity = attrs['humidity'] as number | undefined;
