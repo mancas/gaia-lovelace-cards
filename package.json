@@ -1,7 +1,7 @@
 {
   "name": "custom-ha-cards",
-  "version": "0.4.0",
-  "description": "Custom Home Assistant Lovelace cards \u2014 climate, lights, weather, air quality, appliances, presence, to-do, status, quick actions and more",
+  "version": "0.4.1",
+  "description": "Custom Home Assistant Lovelace cards — climate, lights, weather, air quality, appliances, presence, to-do, status, quick actions and more",
   "private": true,
   "type": "module",
   "scripts": {
