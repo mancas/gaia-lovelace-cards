@@ -94,6 +94,16 @@ export interface CoverCardConfig {
   show_position?: boolean;
 }
 
+export interface RollerShutterCardConfig {
+  type: string;
+  entity: string;
+  name?: string;
+  /** Preset positions shown as quick-tap pills. Defaults to [0, 25, 50, 75, 100] */
+  presets?: number[];
+  /** Show the fine-grained position slider. Defaults to true */
+  show_slider?: boolean;
+}
+
 export interface VacuumCardConfig {
   type: string;
   entity: string;

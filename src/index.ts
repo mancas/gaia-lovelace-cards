@@ -15,6 +15,7 @@ import './cards/person-card.js';
 import './cards/todo-card.js';
 import './cards/status-card.js';
 import './cards/quick-actions-card.js';
+import './cards/roller-shutter-card.js';
 
 declare global {
   interface Window {
@@ -151,6 +152,14 @@ window.customCards.push(
     type: 'custom-quick-actions-card',
     name: 'Quick Actions Card',
     description: 'Icon grid of scripts, scenes, automations and buttons with optional confirmation',
+    preview: true,
+    documentationURL: DOCS,
+  },
+  {
+    type: 'custom-roller-shutter-card',
+    name: 'Roller Shutter Card',
+    description:
+      'Roller shutter and blind control with aperture visualisation, quick presets, and fine slider',
     preview: true,
     documentationURL: DOCS,
   },
