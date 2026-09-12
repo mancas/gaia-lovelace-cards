@@ -1,15 +1,229 @@
 import { LitElement, html, css, nothing } from 'lit';
 import { property, state } from 'lit/decorators.js';
-import type { HomeAssistant, RollerShutterCardConfig, GridOptions } from '../types.js';
-import { defineEditor, sharedStyles, friendlyName, isUnavailable, haptic } from '../helpers.js';
+import type {
+  HomeAssistant,
+  RollerShutterCardConfig,
+  RollerShutterPreset,
+  GridOptions,
+} from '../types.js';
+import { sharedStyles, friendlyName, isUnavailable, haptic, prettify } from '../helpers.js';
+
+/* ------------------------------------------------------------------ */
+/*  Preset helpers                                                     */
+/* ------------------------------------------------------------------ */
+
+type NormalizedPreset = { label: string; position: number };
+
+function normalizePresets(raw: Array<number | RollerShutterPreset>): NormalizedPreset[] {
+  return raw.map((p) =>
+    typeof p === 'number'
+      ? { label: `${p}%`, position: p }
+      : { label: p.name ?? `${p.position}%`, position: p.position },
+  );
+}
 
 const DEFAULT_PRESETS = [0, 25, 50, 75, 100];
 
-defineEditor('custom-roller-shutter-card-editor', [
+/* ------------------------------------------------------------------ */
+/*  Editor                                                             */
+/* ------------------------------------------------------------------ */
+
+const BASE_SCHEMA = [
   { name: 'entity', required: true, selector: { entity: { domain: 'cover' } } },
   { name: 'name', selector: { text: {} } },
   { name: 'show_slider', selector: { boolean: {} } },
-]);
+];
+
+class RollerShutterCardEditor extends LitElement {
+  @property({ attribute: false }) hass!: HomeAssistant;
+  @state() private _config: Record<string, unknown> = {};
+
+  static styles = css`
+    ha-form {
+      display: block;
+    }
+    .presets-section {
+      margin-top: 8px;
+    }
+    .presets-label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--secondary-text-color);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 4px 0 6px;
+    }
+    .preset-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .preset-name {
+      flex: 1;
+      min-width: 0;
+    }
+    .preset-position {
+      width: 72px;
+      flex-shrink: 0;
+    }
+    input[type='text'],
+    input[type='number'] {
+      width: 100%;
+      height: 36px;
+      padding: 0 10px;
+      border: 1px solid var(--divider-color, rgba(0, 0, 0, 0.15));
+      border-radius: 6px;
+      font: inherit;
+      font-size: 0.875rem;
+      background: var(--card-background-color, #fff);
+      color: var(--primary-text-color);
+      box-sizing: border-box;
+      outline: none;
+    }
+    input[type='text']:focus,
+    input[type='number']:focus {
+      border-color: var(--primary-color);
+    }
+    .remove-btn {
+      --mdc-icon-button-size: 36px;
+      flex-shrink: 0;
+      color: var(--secondary-text-color);
+    }
+    .add-btn {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px dashed var(--divider-color, rgba(0, 0, 0, 0.2));
+      border-radius: 6px;
+      background: none;
+      font: inherit;
+      font-size: 0.875rem;
+      color: var(--secondary-text-color);
+      cursor: pointer;
+      text-align: center;
+      margin-top: 2px;
+    }
+    .add-btn:hover {
+      background: var(--secondary-background-color);
+    }
+  `;
+
+  setConfig(config: Record<string, unknown>) {
+    this._config = config ?? {};
+  }
+
+  private get _presets(): Array<{ name?: string; position: number }> {
+    const raw = this._config['presets'] as Array<number | RollerShutterPreset> | undefined;
+    if (!raw) return DEFAULT_PRESETS.map((p) => ({ position: p }));
+    return raw.map((p) =>
+      typeof p === 'number' ? { position: p } : { name: p.name, position: p.position },
+    );
+  }
+
+  private _dispatch(config: Record<string, unknown>) {
+    this.dispatchEvent(
+      new CustomEvent('config-changed', { detail: { config }, bubbles: true, composed: true }),
+    );
+  }
+
+  private _onBaseChanged(ev: Event) {
+    ev.stopPropagation();
+    const formValue = { ...(ev as CustomEvent<{ value: Record<string, unknown> }>).detail.value };
+    for (const [k, v] of Object.entries(formValue)) {
+      if (v === '' || v === undefined || v === null) delete formValue[k];
+    }
+    // Presets are managed separately; re-inject from current state.
+    const presets = this._config['presets'];
+    if (presets !== undefined) formValue['presets'] = presets;
+    this._config = formValue;
+    this._dispatch(formValue);
+  }
+
+  private _savePresets(presets: Array<{ name?: string; position: number }>) {
+    const config = { ...this._config, presets };
+    this._config = config;
+    this._dispatch(config);
+  }
+
+  private _setName(i: number, name: string) {
+    const presets = [...this._presets];
+    presets[i] = { ...presets[i], name: name || undefined };
+    this._savePresets(presets);
+  }
+
+  private _setPosition(i: number, raw: string) {
+    const position = Math.min(100, Math.max(0, parseInt(raw, 10) || 0));
+    const presets = [...this._presets];
+    presets[i] = { ...presets[i], position };
+    this._savePresets(presets);
+  }
+
+  private _remove(i: number) {
+    this._savePresets(this._presets.filter((_, idx) => idx !== i));
+  }
+
+  private _add() {
+    this._savePresets([...this._presets, { position: 50 }]);
+  }
+
+  render() {
+    if (!this.hass) return nothing;
+    const presets = this._presets;
+
+    // Pass only base fields to ha-form so it does not interfere with presets.
+    const baseData: Record<string, unknown> = { ...this._config };
+    delete baseData['presets'];
+
+    return html`
+      <ha-form
+        .hass=${this.hass}
+        .data=${baseData}
+        .schema=${BASE_SCHEMA}
+        .computeLabel=${(s: { name: string }) => prettify(s.name)}
+        @value-changed=${this._onBaseChanged}
+      ></ha-form>
+
+      <div class="presets-section">
+        <div class="presets-label">Presets</div>
+
+        ${presets.map(
+          (p, i) => html`
+            <div class="preset-row">
+              <div class="preset-name">
+                <input
+                  type="text"
+                  .value=${p.name ?? ''}
+                  placeholder="Label (optional)"
+                  @change=${(e: Event) => this._setName(i, (e.target as HTMLInputElement).value)}
+                />
+              </div>
+              <div class="preset-position">
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  .value=${String(p.position)}
+                  @change=${(e: Event) => this._setPosition(i, (e.target as HTMLInputElement).value)}
+                />
+              </div>
+              <ha-icon-button class="remove-btn" .label=${'Remove'} @click=${() => this._remove(i)}>
+                <ha-icon icon="mdi:delete-outline"></ha-icon>
+              </ha-icon-button>
+            </div>
+          `,
+        )}
+
+        <button class="add-btn" @click=${this._add}>+ Add preset</button>
+      </div>
+    `;
+  }
+}
+
+customElements.define('custom-roller-shutter-card-editor', RollerShutterCardEditor);
+
+/* ------------------------------------------------------------------ */
+/*  Card                                                               */
+/* ------------------------------------------------------------------ */
 
 export class RollerShutterCard extends LitElement {
   @property({ attribute: false }) hass!: HomeAssistant;
@@ -173,7 +387,7 @@ export class RollerShutterCard extends LitElement {
       (attrs['current_position'] as number | undefined) ?? (entityState === 'open' ? 100 : 0);
     const position = this._pendingPosition ?? rawPosition;
     const name = this._config.name ?? friendlyName(this.hass, this._config.entity);
-    const presets = this._config.presets ?? DEFAULT_PRESETS;
+    const presets = normalizePresets(this._config.presets ?? DEFAULT_PRESETS);
     const shutterHeight = 100 - position;
 
     return html`
@@ -196,10 +410,10 @@ export class RollerShutterCard extends LitElement {
           ${presets.map(
             (p) => html`
               <button
-                class="pill ${position === p ? 'active' : ''}"
-                @click=${() => this._setPosition(p)}
+                class="pill ${position === p.position ? 'active' : ''}"
+                @click=${() => this._setPosition(p.position)}
               >
-                ${p}%
+                ${p.label}
               </button>
             `,
           )}

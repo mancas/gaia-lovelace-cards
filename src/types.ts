@@ -94,12 +94,21 @@ export interface CoverCardConfig {
   show_position?: boolean;
 }
 
+export interface RollerShutterPreset {
+  /** Display label shown on the pill. Defaults to "<position>%" when omitted. */
+  name?: string;
+  position: number;
+}
+
 export interface RollerShutterCardConfig {
   type: string;
   entity: string;
   name?: string;
-  /** Preset positions shown as quick-tap pills. Defaults to [0, 25, 50, 75, 100] */
-  presets?: number[];
+  /**
+   * Preset positions shown as quick-tap pills. Defaults to [0, 25, 50, 75, 100].
+   * Accepts plain numbers (e.g. 50) or named objects (e.g. { name: "Ventilation", position: 15 }).
+   */
+  presets?: Array<number | RollerShutterPreset>;
   /** Show the fine-grained position slider. Defaults to true */
   show_slider?: boolean;
 }
