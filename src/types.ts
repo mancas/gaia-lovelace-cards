@@ -46,6 +46,8 @@ export interface SwitchCardConfig {
   icon?: string;
   /** Show the ON / OFF label below the toggle. Defaults to true */
   show_state?: boolean;
+  /** Layout of the switch: 'below' (default) centres it under the name; 'inline' places it in the header row */
+  switch_layout?: 'below' | 'inline';
 }
 
 export interface ButtonCardConfig {

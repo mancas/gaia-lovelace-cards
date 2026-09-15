@@ -14,8 +14,17 @@ defineEditor(
     { name: 'name', selector: { text: {} } },
     { name: 'icon', selector: { icon: {} } },
     { name: 'show_state', selector: { boolean: {} } },
+    {
+      name: 'switch_layout',
+      selector: { select: { options: ['below', 'inline'] } },
+    },
   ],
-  { helpers: { show_state: 'Show ON / OFF label below the toggle' } },
+  {
+    helpers: {
+      show_state: 'Show ON / OFF label below the toggle',
+      switch_layout: 'Place the toggle below the name (below) or next to it (inline)',
+    },
+  },
 );
 
 const DOMAIN_ICONS: Record<string, [string, string]> = {
@@ -28,9 +37,6 @@ const DOMAIN_ICONS: Record<string, [string, string]> = {
 export class SwitchCard extends LitElement {
   @property({ attribute: false }) hass!: HomeAssistant;
   @state() private _config!: SwitchCardConfig;
-  @state() private _animating = false;
-
-  private _animTimer?: ReturnType<typeof setTimeout>;
 
   static styles = [
     sharedStyles,
@@ -84,10 +90,7 @@ export class SwitchCard extends LitElement {
       }
       .switch-track.on {
         background: var(--cc-accent);
-        box-shadow:
-          inset 0 2px 4px rgba(0, 0, 0, 0.18),
-          0 0 0 4px color-mix(in srgb, var(--cc-accent) 18%, transparent),
-          0 6px 20px color-mix(in srgb, var(--cc-accent) 38%, transparent);
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.18);
       }
       /* Knob — positioned absolutely inside the track */
       .switch-knob {
@@ -114,8 +117,7 @@ export class SwitchCard extends LitElement {
         box-shadow:
           0 3px 10px rgba(0, 0, 0, 0.4),
           0 1px 3px rgba(0, 0, 0, 0.2),
-          inset 0 1px 0 rgba(255, 255, 255, 0.8),
-          0 0 12px color-mix(in srgb, var(--cc-accent) 50%, transparent);
+          inset 0 1px 0 rgba(255, 255, 255, 0.8);
       }
       /* Small LED dot on the knob surface */
       .knob-dot {
@@ -123,39 +125,23 @@ export class SwitchCard extends LitElement {
         height: 12px;
         border-radius: 50%;
         background: rgba(0, 0, 0, 0.1);
-        transition:
-          background 0.3s ease,
-          box-shadow 0.3s ease;
+        transition: background 0.3s ease;
       }
       .switch-track.on .knob-dot {
         background: color-mix(in srgb, var(--cc-accent) 80%, black);
-        box-shadow: 0 0 5px var(--cc-accent);
       }
-      /* Radial glow burst that fires when the switch activates */
-      @keyframes knob-glow-burst {
-        0% {
-          opacity: 0;
-          transform: scale(0.5);
-        }
-        35% {
-          opacity: 0.65;
-          transform: scale(1.45);
-        }
-        100% {
-          opacity: 0;
-          transform: scale(2.4);
-        }
+      /* Inline layout: switch sits in the header row, to the right */
+      .header.inline {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
       }
-      .knob-glow {
-        position: absolute;
-        inset: -3px;
-        border-radius: 50%;
-        background: radial-gradient(circle, var(--cc-accent) 0%, transparent 65%);
-        opacity: 0;
-        pointer-events: none;
-      }
-      .switch-track.on.animating .knob-glow {
-        animation: knob-glow-burst 0.55s ease-out forwards;
+      .header.inline .title {
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
       /* State label */
       .state-label {
@@ -174,7 +160,7 @@ export class SwitchCard extends LitElement {
 
   setConfig(config: SwitchCardConfig) {
     if (!config.entity) throw new Error("switch-card: 'entity' is required");
-    this._config = { show_state: true, ...config };
+    this._config = { show_state: true, switch_layout: 'below', ...config };
   }
 
   static getConfigElement() {
@@ -200,15 +186,7 @@ export class SwitchCard extends LitElement {
   private _toggle() {
     const entity = this._entity;
     if (!entity || isUnavailable(entity)) return;
-
-    clearTimeout(this._animTimer);
-    this._animating = true;
-    this._animTimer = setTimeout(() => {
-      this._animating = false;
-    }, 700);
-
     haptic(this, 'medium');
-
     const domain = this._config.entity.split('.')[0];
     this.hass.callService(domain, 'toggle', { entity_id: this._config.entity });
   }
@@ -235,41 +213,41 @@ export class SwitchCard extends LitElement {
     ];
     const icon = this._config.icon ?? (isOn ? iconOn : iconOff);
 
-    const trackClass = [isOn ? 'on' : '', this._animating ? 'animating' : '']
-      .filter(Boolean)
-      .join(' ');
+    const trackClass = isOn ? 'on' : '';
+    const inline = this._config.switch_layout === 'inline';
+
+    const switchToggle = html`
+      <div
+        class="switch-track ${trackClass}"
+        role="switch"
+        tabindex="0"
+        aria-checked="${isOn ? 'true' : 'false'}"
+        aria-label="${name}"
+        @click=${this._toggle}
+        @keydown=${(e: KeyboardEvent) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            this._toggle();
+          }
+        }}
+      >
+        <div class="switch-knob">
+          <div class="knob-dot"></div>
+        </div>
+      </div>
+    `;
 
     return html`
       <ha-card class="${isOn ? 'on' : ''} ${unavailable ? 'unavailable' : ''}">
-        <div class="header">
+        <div class="header ${inline ? 'inline' : ''}">
           <div class="icon-bubble ${isOn ? 'active' : ''}">
             <ha-icon .icon=${icon}></ha-icon>
           </div>
           <div class="title">${name}</div>
+          ${inline ? switchToggle : nothing}
         </div>
 
-        <div class="switch-body">
-          <div
-            class="switch-track ${trackClass}"
-            role="switch"
-            tabindex="0"
-            aria-checked="${isOn ? 'true' : 'false'}"
-            aria-label="${name}"
-            @click=${this._toggle}
-            @keydown=${(e: KeyboardEvent) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                this._toggle();
-              }
-            }}
-          >
-            <div class="switch-knob">
-              <div class="knob-glow"></div>
-              <div class="knob-dot"></div>
-            </div>
-          </div>
-        </div>
-
+        ${!inline ? html`<div class="switch-body">${switchToggle}</div>` : nothing}
         ${
           this._config.show_state !== false
             ? html`<div class="state-label ${isOn ? 'on' : ''}">${isOn ? 'On' : 'Off'}</div>`
