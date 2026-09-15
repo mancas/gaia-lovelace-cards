@@ -249,6 +249,15 @@ const mockHass: HomeAssistant = {
       elevation: 35,
       azimuth: 180,
     }),
+    'switch.kitchen_lights': entity('switch.kitchen_lights', 'on', {
+      friendly_name: 'Kitchen Lights',
+    }),
+    'switch.garden_lights': entity('switch.garden_lights', 'off', {
+      friendly_name: 'Garden Lights',
+    }),
+    'input_boolean.guest_mode': entity('input_boolean.guest_mode', 'off', {
+      friendly_name: 'Guest Mode',
+    }),
   },
 
   callService: async (domain, service, data) => {
@@ -438,6 +447,31 @@ const sections: Section[] = [
         tag: 'custom-vacuum-card',
         label: 'custom-vacuum-card',
         config: { entity: 'vacuum.robot', name: 'Robot Vacuum' },
+      },
+    ],
+  },
+  {
+    title: 'Switches',
+    cards: [
+      {
+        tag: 'custom-switch-card',
+        label: 'custom-switch-card — on',
+        config: { entity: 'switch.kitchen_lights', name: 'Kitchen Lights', show_state: true },
+      },
+      {
+        tag: 'custom-switch-card',
+        label: 'custom-switch-card — off',
+        config: { entity: 'switch.garden_lights', name: 'Garden Lights', show_state: true },
+      },
+      {
+        tag: 'custom-switch-card',
+        label: 'custom-switch-card — input_boolean',
+        config: {
+          entity: 'input_boolean.guest_mode',
+          name: 'Guest Mode',
+          icon: 'mdi:account-key',
+          show_state: true,
+        },
       },
     ],
   },

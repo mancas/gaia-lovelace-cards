@@ -39,6 +39,15 @@ export interface GridOptions {
   max_rows?: number;
 }
 
+export interface SwitchCardConfig {
+  type: string;
+  entity: string;
+  name?: string;
+  icon?: string;
+  /** Show the ON / OFF label below the toggle. Defaults to true */
+  show_state?: boolean;
+}
+
 export interface ButtonCardConfig {
   type: string;
   entity: string;

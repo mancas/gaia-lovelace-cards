@@ -16,6 +16,7 @@ import './cards/todo-card.js';
 import './cards/status-card.js';
 import './cards/quick-actions-card.js';
 import './cards/roller-shutter-card.js';
+import './cards/switch-card.js';
 
 declare global {
   interface Window {
@@ -160,6 +161,14 @@ window.customCards.push(
     name: 'Roller Shutter Card',
     description:
       'Roller shutter and blind control with aperture visualisation, quick presets, and fine slider',
+    preview: true,
+    documentationURL: DOCS,
+  },
+  {
+    type: 'custom-switch-card',
+    name: 'Switch Card',
+    description:
+      'Physical toggle switch with spring animation and glow — for switch and input_boolean entities',
     preview: true,
     documentationURL: DOCS,
   },
