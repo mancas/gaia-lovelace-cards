@@ -167,8 +167,12 @@ export class SwitchCard extends LitElement {
     return document.createElement('custom-switch-card-editor');
   }
 
-  static getStubConfig(): Omit<SwitchCardConfig, 'type'> {
-    return { entity: 'switch.example', show_state: true };
+  static getStubConfig(hass?: HomeAssistant): Omit<SwitchCardConfig, 'type'> {
+    const entity =
+      Object.keys(hass?.states ?? {}).find(
+        (e) => e.startsWith('switch.') || e.startsWith('input_boolean.'),
+      ) ?? 'switch.example';
+    return { entity, show_state: true };
   }
 
   getCardSize() {

@@ -84,8 +84,10 @@ export class VacuumCard extends LitElement {
     return document.createElement('custom-vacuum-card-editor');
   }
 
-  static getStubConfig(): Omit<VacuumCardConfig, 'type'> {
-    return { entity: 'vacuum.robot' };
+  static getStubConfig(hass?: HomeAssistant): Omit<VacuumCardConfig, 'type'> {
+    const entity =
+      Object.keys(hass?.states ?? {}).find((e) => e.startsWith('vacuum.')) ?? 'vacuum.robot';
+    return { entity };
   }
 
   private get _entity() {

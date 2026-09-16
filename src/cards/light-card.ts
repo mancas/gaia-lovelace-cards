@@ -133,13 +133,10 @@ export class LightCard extends LitElement {
     return document.createElement('custom-light-card-editor');
   }
 
-  static getStubConfig(): Omit<LightCardConfig, 'type'> {
-    return {
-      entity: 'light.living_room',
-      show_brightness: true,
-      show_color_temp: true,
-      show_color: true,
-    };
+  static getStubConfig(hass?: HomeAssistant): Omit<LightCardConfig, 'type'> {
+    const entity =
+      Object.keys(hass?.states ?? {}).find((e) => e.startsWith('light.')) ?? 'light.living_room';
+    return { entity, show_brightness: true, show_color_temp: true, show_color: true };
   }
 
   getCardSize() {

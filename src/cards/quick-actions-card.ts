@@ -99,11 +99,18 @@ export class QuickActionsCard extends LitElement {
     return document.createElement('custom-quick-actions-card-editor');
   }
 
-  static getStubConfig(): Omit<QuickActionsCardConfig, 'type'> {
+  static getStubConfig(hass?: HomeAssistant): Omit<QuickActionsCardConfig, 'type'> {
+    const actionEntity =
+      Object.keys(hass?.states ?? {}).find(
+        (e) => e.startsWith('script.') || e.startsWith('scene.') || e.startsWith('automation.'),
+      ) ?? 'script.good_night';
+    const name =
+      (hass?.states[actionEntity]?.attributes?.['friendly_name'] as string | undefined) ??
+      'Good night';
     return {
       name: 'Quick actions',
       columns: 4,
-      actions: [{ entity: 'script.good_night', name: 'Good night', icon: 'mdi:weather-night' }],
+      actions: [{ entity: actionEntity, name, icon: 'mdi:weather-night' }],
     };
   }
 

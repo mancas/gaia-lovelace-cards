@@ -102,8 +102,10 @@ export class LockCard extends LitElement {
     return document.createElement('custom-lock-card-editor');
   }
 
-  static getStubConfig(): Omit<LockCardConfig, 'type'> {
-    return { entity: 'lock.front_door', require_confirm: true };
+  static getStubConfig(hass?: HomeAssistant): Omit<LockCardConfig, 'type'> {
+    const entity =
+      Object.keys(hass?.states ?? {}).find((e) => e.startsWith('lock.')) ?? 'lock.front_door';
+    return { entity, require_confirm: true };
   }
 
   private get _entity() {

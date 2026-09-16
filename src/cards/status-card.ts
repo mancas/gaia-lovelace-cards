@@ -180,8 +180,12 @@ export class StatusCard extends LitElement {
     return document.createElement('custom-status-card-editor');
   }
 
-  static getStubConfig(): Omit<StatusCardConfig, 'type'> {
-    return { name: 'Safety', entities: ['binary_sensor.water_leak'], layout: 'list' };
+  static getStubConfig(hass?: HomeAssistant): Omit<StatusCardConfig, 'type'> {
+    const binarySensors = Object.keys(hass?.states ?? {})
+      .filter((e) => e.startsWith('binary_sensor.'))
+      .slice(0, 3);
+    const entities = binarySensors.length ? binarySensors : ['binary_sensor.water_leak'];
+    return { name: 'Safety', entities, layout: 'list' };
   }
 
   getCardSize() {

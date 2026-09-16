@@ -364,12 +364,16 @@ export class SensorGaugeCard extends LitElement {
     return document.createElement('custom-sensor-gauge-card-editor');
   }
 
-  static getStubConfig(): Omit<SensorGaugeCardConfig, 'type'> {
+  static getStubConfig(hass?: HomeAssistant): Omit<SensorGaugeCardConfig, 'type'> {
+    const entity =
+      Object.keys(hass?.states ?? {}).find((e) => e.startsWith('sensor.')) ??
+      'sensor.living_room_temperature';
     return {
-      entity: 'sensor.living_room_temperature',
-      unit: '°C',
+      entity,
+      unit:
+        (hass?.states[entity]?.attributes?.['unit_of_measurement'] as string | undefined) ?? '°C',
       min: 0,
-      max: 40,
+      max: 100,
       style: 'circular',
     };
   }

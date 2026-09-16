@@ -71,8 +71,11 @@ export class CoverCard extends LitElement {
     return document.createElement('custom-cover-card-editor');
   }
 
-  static getStubConfig(): Omit<CoverCardConfig, 'type'> {
-    return { entity: 'cover.living_room_blinds', show_position: true };
+  static getStubConfig(hass?: HomeAssistant): Omit<CoverCardConfig, 'type'> {
+    const entity =
+      Object.keys(hass?.states ?? {}).find((e) => e.startsWith('cover.')) ??
+      'cover.living_room_blinds';
+    return { entity, show_position: true };
   }
 
   private get _entity() {

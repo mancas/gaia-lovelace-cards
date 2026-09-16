@@ -207,14 +207,28 @@ export class RoomOverviewCard extends LitElement {
     if (this._config.navigation_path) navigate(this, this._config.navigation_path);
   }
 
-  static getStubConfig(): Omit<RoomOverviewCardConfig, 'type'> {
+  static getStubConfig(hass?: HomeAssistant): Omit<RoomOverviewCardConfig, 'type'> {
+    const states = hass?.states ?? {};
+    const lights = Object.keys(states)
+      .filter((e) => e.startsWith('light.'))
+      .slice(0, 2);
+    const fans = Object.keys(states)
+      .filter((e) => e.startsWith('fan.'))
+      .slice(0, 1);
+    const climate = Object.keys(states)
+      .filter((e) => e.startsWith('climate.'))
+      .slice(0, 1);
+    const temperature_sensor = Object.keys(states).find((e) => e.startsWith('sensor.'));
+    const humidity_sensor = Object.keys(states).find(
+      (e) => e.startsWith('sensor.') && e !== temperature_sensor,
+    );
     return {
       name: 'Living Room',
-      lights: ['light.living_room'],
-      temperature_sensor: 'sensor.living_room_temperature',
-      humidity_sensor: 'sensor.living_room_humidity',
-      fans: ['fan.living_room'],
-      climate: ['climate.living_room'],
+      lights: lights.length ? lights : ['light.living_room'],
+      ...(fans.length && { fans }),
+      ...(climate.length && { climate }),
+      ...(temperature_sensor && { temperature_sensor }),
+      ...(humidity_sensor && { humidity_sensor }),
     };
   }
 

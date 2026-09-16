@@ -134,8 +134,10 @@ export class PersonCard extends LitElement {
     return document.createElement('custom-person-card-editor');
   }
 
-  static getStubConfig(): Omit<PersonCardConfig, 'type'> {
-    return { entity: 'person.me' };
+  static getStubConfig(hass?: HomeAssistant): Omit<PersonCardConfig, 'type'> {
+    const entity =
+      Object.keys(hass?.states ?? {}).find((e) => e.startsWith('person.')) ?? 'person.me';
+    return { entity };
   }
 
   getCardSize() {

@@ -139,8 +139,16 @@ export class ButtonCard extends LitElement {
     return document.createElement('custom-button-card-editor');
   }
 
-  static getStubConfig(): Omit<ButtonCardConfig, 'type'> {
-    return { entity: 'light.living_room', name: 'Living Room', show_state: true };
+  static getStubConfig(hass?: HomeAssistant): Omit<ButtonCardConfig, 'type'> {
+    const entity =
+      Object.keys(hass?.states ?? {}).find(
+        (e) => e.startsWith('light.') || e.startsWith('switch.') || e.startsWith('input_boolean.'),
+      ) ?? 'light.living_room';
+    return {
+      entity,
+      name: hass?.states[entity]?.attributes?.['friendly_name'] ?? 'Living Room',
+      show_state: true,
+    };
   }
 
   getCardSize() {

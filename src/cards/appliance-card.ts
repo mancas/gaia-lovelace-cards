@@ -226,13 +226,14 @@ export class ApplianceCard extends LitElement {
     return document.createElement('custom-appliance-card-editor');
   }
 
-  static getStubConfig(): Omit<ApplianceCardConfig, 'type'> {
-    return {
-      name: 'Dishwasher',
-      icon: 'mdi:dishwasher',
-      power: 'switch.dishwasher_power',
-      operation_state: 'sensor.dishwasher_operation_state',
-    };
+  static getStubConfig(hass?: HomeAssistant): Omit<ApplianceCardConfig, 'type'> {
+    const power =
+      Object.keys(hass?.states ?? {}).find((e) => e.startsWith('switch.')) ??
+      'switch.dishwasher_power';
+    const operation_state =
+      Object.keys(hass?.states ?? {}).find((e) => e.startsWith('sensor.')) ??
+      'sensor.dishwasher_operation_state';
+    return { name: 'Dishwasher', icon: 'mdi:dishwasher', power, operation_state };
   }
 
   getCardSize() {

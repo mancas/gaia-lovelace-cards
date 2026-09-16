@@ -448,8 +448,18 @@ export class AirQualityCard extends LitElement {
     return document.createElement('custom-air-quality-card-editor');
   }
 
-  static getStubConfig(): Omit<AirQualityCardConfig, 'type'> {
-    return { name: 'Air quality', style: 'scale', co2: 'sensor.co2', pm25: 'sensor.pm25' };
+  static getStubConfig(hass?: HomeAssistant): Omit<AirQualityCardConfig, 'type'> {
+    const sensors = Object.keys(hass?.states ?? {}).filter((e) => e.startsWith('sensor.'));
+    const co2 =
+      sensors.find((e) => /co2|carbon/i.test(e)) ??
+      sensors.find((e) => /air|quality/i.test(e)) ??
+      sensors[0] ??
+      'sensor.co2';
+    const pm25 =
+      sensors.find((e) => /pm25|pm2_5|particulate/i.test(e)) ??
+      sensors.find((e) => e !== co2) ??
+      'sensor.pm25';
+    return { name: 'Air quality', style: 'scale', co2, pm25 };
   }
 
   getCardSize() {

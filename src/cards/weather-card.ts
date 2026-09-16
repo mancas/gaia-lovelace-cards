@@ -157,8 +157,10 @@ export class WeatherCard extends LitElement {
     return document.createElement('custom-weather-card-editor');
   }
 
-  static getStubConfig(): Omit<WeatherCardConfig, 'type'> {
-    return { entity: 'weather.home', forecast: 'daily', forecast_items: 5, show_details: true };
+  static getStubConfig(hass?: HomeAssistant): Omit<WeatherCardConfig, 'type'> {
+    const entity =
+      Object.keys(hass?.states ?? {}).find((e) => e.startsWith('weather.')) ?? 'weather.home';
+    return { entity, forecast: 'daily', forecast_items: 5, show_details: true };
   }
 
   getCardSize() {

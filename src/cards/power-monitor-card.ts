@@ -97,8 +97,20 @@ export class PowerMonitorCard extends LitElement {
     return document.createElement('custom-power-monitor-card-editor');
   }
 
-  static getStubConfig(): Omit<PowerMonitorCardConfig, 'type'> {
-    return { entity: 'sensor.socket_power', unit: 'W' };
+  static getStubConfig(hass?: HomeAssistant): Omit<PowerMonitorCardConfig, 'type'> {
+    const entity =
+      Object.keys(hass?.states ?? {}).find(
+        (e) =>
+          e.startsWith('sensor.') &&
+          ['W', 'kW', 'VA'].includes(
+            hass!.states[e]?.attributes?.['unit_of_measurement'] as string,
+          ),
+      ) ??
+      Object.keys(hass?.states ?? {}).find((e) => e.startsWith('sensor.')) ??
+      'sensor.socket_power';
+    const unit =
+      (hass?.states[entity]?.attributes?.['unit_of_measurement'] as string | undefined) ?? 'W';
+    return { entity, unit };
   }
 
   private _powerClass(watts: number): string {

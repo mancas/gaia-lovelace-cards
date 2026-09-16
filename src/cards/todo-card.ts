@@ -164,8 +164,10 @@ export class TodoCard extends LitElement {
     return document.createElement('custom-todo-card-editor');
   }
 
-  static getStubConfig(): Omit<TodoCardConfig, 'type'> {
-    return { entity: 'todo.shopping_list', show_completed: true };
+  static getStubConfig(hass?: HomeAssistant): Omit<TodoCardConfig, 'type'> {
+    const entity =
+      Object.keys(hass?.states ?? {}).find((e) => e.startsWith('todo.')) ?? 'todo.shopping_list';
+    return { entity, show_completed: true };
   }
 
   getCardSize() {

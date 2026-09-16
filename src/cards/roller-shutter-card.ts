@@ -318,8 +318,11 @@ export class RollerShutterCard extends LitElement {
     return document.createElement('custom-roller-shutter-card-editor');
   }
 
-  static getStubConfig(): Omit<RollerShutterCardConfig, 'type'> {
-    return { entity: 'cover.living_room_blinds', show_slider: true };
+  static getStubConfig(hass?: HomeAssistant): Omit<RollerShutterCardConfig, 'type'> {
+    const entity =
+      Object.keys(hass?.states ?? {}).find((e) => e.startsWith('cover.')) ??
+      'cover.living_room_blinds';
+    return { entity, show_slider: true };
   }
 
   getCardSize() {

@@ -110,8 +110,11 @@ export class MediaPlayerCard extends LitElement {
     return document.createElement('custom-media-player-card-editor');
   }
 
-  static getStubConfig(): Omit<MediaPlayerCardConfig, 'type'> {
-    return { entity: 'media_player.living_room', show_volume: true, show_source: true };
+  static getStubConfig(hass?: HomeAssistant): Omit<MediaPlayerCardConfig, 'type'> {
+    const entity =
+      Object.keys(hass?.states ?? {}).find((e) => e.startsWith('media_player.')) ??
+      'media_player.living_room';
+    return { entity, show_volume: true, show_source: true };
   }
 
   private get _entity() {

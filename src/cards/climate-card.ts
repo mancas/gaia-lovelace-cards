@@ -227,8 +227,11 @@ export class ClimateCard extends LitElement {
     return document.createElement('custom-climate-card-editor');
   }
 
-  static getStubConfig(): Omit<ClimateCardConfig, 'type'> {
-    return { entity: 'climate.living_room', show_modes: true, show_fan_modes: true };
+  static getStubConfig(hass?: HomeAssistant): Omit<ClimateCardConfig, 'type'> {
+    const entity =
+      Object.keys(hass?.states ?? {}).find((e) => e.startsWith('climate.')) ??
+      'climate.living_room';
+    return { entity, show_modes: true, show_fan_modes: true };
   }
 
   getCardSize() {
