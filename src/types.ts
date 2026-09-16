@@ -61,9 +61,22 @@ export interface ButtonCardConfig {
   show_state?: boolean;
 }
 
+export interface SensorGaugeEntityConfig {
+  entity: string;
+  name?: string;
+  unit?: string;
+  min?: number;
+  max?: number;
+  thresholds?: Array<{ value: number; color: string }>;
+  style?: 'circular' | 'linear';
+}
+
 export interface SensorGaugeCardConfig {
   type: string;
-  entity: string;
+  /** Single entity — kept for backward compatibility. Ignored when `entities` is set. */
+  entity?: string;
+  /** Multiple entities, each with optional per-entity overrides. */
+  entities?: SensorGaugeEntityConfig[];
   name?: string;
   unit?: string;
   min?: number;
