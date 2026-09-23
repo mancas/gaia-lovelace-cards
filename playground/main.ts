@@ -144,11 +144,16 @@ const mockHass: HomeAssistant = {
     }),
     'media_player.living_room': entity('media_player.living_room', 'playing', {
       friendly_name: 'Living Room TV',
+      device_class: 'tv',
       media_title: 'Bohemian Rhapsody',
       media_artist: 'Queen',
+      media_duration: 355,
+      media_position: 92,
+      media_position_updated_at: new Date().toISOString(),
       volume_level: 0.4,
       source: 'Spotify',
       source_list: ['Spotify', 'Netflix', 'HDMI 1', 'HDMI 2'],
+      supported_features: 149375,
     }),
     'cover.living_room_blinds': entity('cover.living_room_blinds', 'open', {
       friendly_name: 'Living Room Blinds',

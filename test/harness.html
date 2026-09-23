@@ -64,7 +64,7 @@ const states = Object.fromEntries([
   S('binary_sensor.leak','on',{friendly_name:'Fuga de agua', device_class:'moisture'}),
   S('binary_sensor.door','off',{friendly_name:'Puerta', device_class:'door'}),
   S('automation.luz','on',{friendly_name:'Luz entrada'}), S('switch.pj','off',{friendly_name:'Permit join'}), S('button.z2m','unknown',{friendly_name:'Restart Z2M'}),
-  S('media_player.tv','playing',{friendly_name:'Tele', volume_level:0.35, source:'TV', source_list:['TV','HDMI'], media_title:'Un título de programa bastante largo', media_artist:'Canal', supported_features:149375}),
+  S('media_player.tv','playing',{friendly_name:'Tele', device_class:'tv', volume_level:0.35, source:'TV', source_list:['TV','HDMI','Netflix','Spotify'], media_title:'Un título de programa bastante largo', media_artist:'Canal', media_duration:5400, media_position:1230, media_position_updated_at:new Date().toISOString(), supported_features:149375}),
   S('sensor.power','412.5',{friendly_name:'Potencia', unit_of_measurement:'W', device_class:'power'}),
   S('sensor.energy_day','1.234',{unit_of_measurement:'kWh'}), S('sensor.energy_month','31.7',{unit_of_measurement:'kWh'}),
   S('fan.salon','on',{friendly_name:'Ventilador', percentage:60}),

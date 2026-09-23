@@ -251,8 +251,13 @@ type: custom:custom-media-player-card
 entity: media_player.living_room
 show_volume: true
 show_source: true
+show_progress: true
+volume_step: 5   # percent per −/+ tap (press and hold to ramp)
 artwork: cover
 ```
+A remote-style layout: header with power button, optional artwork and now-playing info,
+a tap-to-seek progress bar, transport controls, and a volume row with mute, −/+ buttons
+and a slider. Controls that the entity does not support are hidden automatically.
 
 ### Power Monitor Card
 ```yaml

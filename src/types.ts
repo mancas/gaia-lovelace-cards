@@ -92,6 +92,10 @@ export interface MediaPlayerCardConfig {
   name?: string;
   show_volume?: boolean;
   show_source?: boolean;
+  /** Show the playback progress bar (elapsed / total, tap to seek). Defaults to true */
+  show_progress?: boolean;
+  /** Volume change per tap of the −/+ buttons, in percent. Defaults to 5 */
+  volume_step?: number;
   artwork?: 'cover' | 'none';
 }
 

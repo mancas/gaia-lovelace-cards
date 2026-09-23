@@ -51,7 +51,8 @@ window.customCards.push(
   {
     type: 'custom-media-player-card',
     name: 'Media Player Card',
-    description: 'Full media player controls with artwork, volume, and source selection',
+    description:
+      'Remote-style media controls — artwork, progress/seek, transport, volume −/+ and source',
     preview: true,
     documentationURL: DOCS,
   },
