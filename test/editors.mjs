@@ -76,6 +76,18 @@ const results = await page.evaluate(async () => {
   const hass = { states: {}, callService: async () => {}, formatEntityState: () => '' };
   const out = [];
 
+  // Order-insensitive serialisation: editors may spread a config across several
+  // forms (and reorder keys) while still carrying the whole thing.
+  const stable = (value) =>
+    JSON.stringify(value, (_key, val) => {
+      if (val && typeof val === 'object' && !Array.isArray(val)) {
+        return Object.keys(val)
+          .sort()
+          .reduce((acc, k) => ((acc[k] = val[k]), acc), {});
+      }
+      return val;
+    });
+
   for (const meta of window.customCards ?? []) {
     const row = { type: meta.type };
     try {
@@ -95,16 +107,28 @@ const results = await page.evaluate(async () => {
       el.setConfig(stub);
       await el.updateComplete;
 
-      const form = el.shadowRoot?.querySelector('ha-form');
-      if (!form) throw new Error('no ha-form rendered');
-      if (JSON.stringify(form._data) !== JSON.stringify(stub)) {
+      // Most editors render one form holding the whole config; multi-section
+      // editors (e.g. sensor-gauge: card defaults + one form per entity) must
+      // still account for every key of the config between their forms.
+      const forms = [...(el.shadowRoot?.querySelectorAll('ha-form') ?? [])];
+      if (!forms.length) throw new Error('no ha-form rendered');
+      const form = forms[0];
+      const received = Object.assign({}, ...forms.map((f) => f._data ?? {}), { type: meta.type });
+      if (stable(received) !== stable(stub)) {
         throw new Error('ha-form did not receive the config');
       }
 
-      row.fields = (form._schema ?? []).flatMap((s) =>
-        s.type === 'grid' ? s.schema.map((x) => x.name) : [s.name],
-      );
-      const unlabelled = row.fields.filter((n) => !form._computeLabel?.({ name: n }));
+      const fieldsOf = (f) =>
+        (f._schema ?? []).flatMap((s) =>
+          s.type === 'grid' ? s.schema.map((x) => x.name) : [s.name],
+        );
+      row.fields = forms.flatMap(fieldsOf);
+      const unlabelled = [];
+      for (const f of forms) {
+        for (const n of fieldsOf(f)) {
+          if (!f._computeLabel?.({ name: n })) unlabelled.push(n);
+        }
+      }
       if (unlabelled.length) throw new Error(`no label for ${unlabelled.join(', ')}`);
 
       const emitted = [];

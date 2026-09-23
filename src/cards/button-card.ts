@@ -146,7 +146,9 @@ export class ButtonCard extends LitElement {
       ) ?? 'light.living_room';
     return {
       entity,
-      name: hass?.states[entity]?.attributes?.['friendly_name'] ?? 'Living Room',
+      name:
+        (hass?.states[entity]?.attributes?.['friendly_name'] as string | undefined) ??
+        'Living Room',
       show_state: true,
     };
   }
