@@ -17,6 +17,7 @@ import './cards/status-card.js';
 import './cards/quick-actions-card.js';
 import './cards/roller-shutter-card.js';
 import './cards/switch-card.js';
+import './cards/playstation-card.js';
 
 declare global {
   interface Window {
@@ -170,6 +171,14 @@ window.customCards.push(
     name: 'Switch Card',
     description:
       'Physical toggle switch with spring animation and glow — for switch and input_boolean entities',
+    preview: true,
+    documentationURL: DOCS,
+  },
+  {
+    type: 'custom-playstation-card',
+    name: 'PlayStation Card',
+    description:
+      'PlayStation Network profile — online status, trophy level, trophy counts and the game being played',
     preview: true,
     documentationURL: DOCS,
   },

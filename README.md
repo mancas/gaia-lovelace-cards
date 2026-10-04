@@ -6,25 +6,26 @@ so it sizes itself sensibly inside **sections** views.
 
 ## Cards
 
-| Card | Element | Purpose |
-|------|---------|---------|
-| Climate Card | `custom-climate-card` | Hero thermostat: big target, +/- stepper, HVAC mode and fan mode pills, mode‑tinted background |
-| Light Card | `custom-light-card` | Toggle, brightness slider (debounced), white temperature swatches and colour presets |
-| Weather Card | `custom-weather-card` | Current conditions + daily/hourly forecast (uses the live forecast subscription) |
-| Air Quality Card | `custom-air-quality-card` | CO₂, PM2.5, VOC, temperature, humidity — three visualisations (`scale`, `hero`, `tiles`) with health thresholds |
-| Appliance Card | `custom-appliance-card` | Home Connect style: power, operation state, program picker, progress/ETA, options, start/stop |
-| Person Card | `custom-person-card` | Presence with zone colour, phone battery, activity, steps and last known location |
-| To‑do Card | `custom-todo-card` | Shopping/to‑do list: add inline, tick, remove, clear completed |
-| Status Card | `custom-status-card` | Safety & status sensors (leak, door, motion, battery…) — anything needing attention is highlighted |
-| Quick Actions Card | `custom-quick-actions-card` | Icon grid of scripts, scenes, automations, buttons; optional tap‑twice confirmation |
-| Room Overview Card | `custom-room-overview-card` | Room summary: temperature/humidity pills, lights (or switches), plugs, fans, climate; header can navigate to the room view |
-| Button Card | `custom-button-card` | Toggle lights, fans, AC, or any entity with state-based styling |
-| Sensor Gauge Card | `custom-sensor-gauge-card` | Circular or linear gauge for temperature, humidity, and numeric sensors |
-| Media Player Card | `custom-media-player-card` | Full media player controls — artwork, play/pause, volume, source selection |
-| Cover Card | `custom-cover-card` | Blinds, shutters and garage doors with position slider |
-| Vacuum Card | `custom-vacuum-card` | Robot vacuum controls with battery and status |
-| Lock Card | `custom-lock-card` | Smart lock with optional unlock confirmation |
-| Power Monitor Card | `custom-power-monitor-card` | Current power draw with optional daily and monthly energy |
+| Card               | Element                     | Purpose                                                                                                                         |
+| ------------------ | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Climate Card       | `custom-climate-card`       | Hero thermostat: big target, +/- stepper, HVAC mode and fan mode pills, mode‑tinted background                                  |
+| Light Card         | `custom-light-card`         | Toggle, brightness slider (debounced), white temperature swatches and colour presets                                            |
+| Weather Card       | `custom-weather-card`       | Current conditions + daily/hourly forecast (uses the live forecast subscription)                                                |
+| Air Quality Card   | `custom-air-quality-card`   | CO₂, PM2.5, VOC, temperature, humidity — three visualisations (`scale`, `hero`, `tiles`) with health thresholds                 |
+| Appliance Card     | `custom-appliance-card`     | Home Connect style: power, operation state, program picker, progress/ETA, options, start/stop                                   |
+| Person Card        | `custom-person-card`        | Presence with zone colour, phone battery, activity, steps and last known location                                               |
+| To‑do Card         | `custom-todo-card`          | Shopping/to‑do list: add inline, tick, remove, clear completed                                                                  |
+| Status Card        | `custom-status-card`        | Safety & status sensors (leak, door, motion, battery…) — anything needing attention is highlighted                              |
+| Quick Actions Card | `custom-quick-actions-card` | Icon grid of scripts, scenes, automations, buttons; optional tap‑twice confirmation                                             |
+| Room Overview Card | `custom-room-overview-card` | Room summary: temperature/humidity pills, lights (or switches), plugs, fans, climate; header can navigate to the room view      |
+| Button Card        | `custom-button-card`        | Toggle lights, fans, AC, or any entity with state-based styling                                                                 |
+| Sensor Gauge Card  | `custom-sensor-gauge-card`  | Circular or linear gauge for temperature, humidity, and numeric sensors                                                         |
+| Media Player Card  | `custom-media-player-card`  | Full media player controls — artwork, play/pause, volume, source selection                                                      |
+| Cover Card         | `custom-cover-card`         | Blinds, shutters and garage doors with position slider                                                                          |
+| Vacuum Card        | `custom-vacuum-card`        | Robot vacuum controls with battery and status                                                                                   |
+| Lock Card          | `custom-lock-card`          | Smart lock with optional unlock confirmation                                                                                    |
+| Power Monitor Card | `custom-power-monitor-card` | Current power draw with optional daily and monthly energy                                                                       |
+| PlayStation Card   | `custom-playstation-card`   | PlayStation Network profile: avatar, online status, PS Plus, trophy level and progress, trophy counts and the game being played |
 
 ## Responsive behaviour
 
@@ -69,6 +70,7 @@ should compose those instead of re‑inventing them so the whole dashboard reads
 ## Card configuration examples
 
 ### Climate Card
+
 ```yaml
 type: custom:custom-climate-card
 entity: climate.aire
@@ -81,22 +83,24 @@ humidity_sensor: sensor.salon_humedad
 ```
 
 ### Light Card
+
 ```yaml
 type: custom:custom-light-card
 entity: light.led_sofa
 show_brightness: true
 show_color_temp: true
 show_color: true
-color_presets:            # optional, overrides the default palette
+color_presets: # optional, overrides the default palette
   - { name: Warm, rgb: [255, 160, 60] }
   - { name: Blue, rgb: [64, 128, 255] }
 ```
 
 ### Weather Card
+
 ```yaml
 type: custom:custom-weather-card
 entity: weather.forecast_casa
-forecast: daily           # daily | hourly | none
+forecast: daily # daily | hourly | none
 forecast_items: 5
 show_details: true
 ```
@@ -105,24 +109,24 @@ show_details: true
 
 Three visualisations of the same data, chosen with `style`:
 
-| `style` | Reads as | Good for |
-|---------|----------|----------|
-| `scale` (default) | each pollutant plotted on its health scale, with a marker and an advisory line when action helps | a detail/room view — you see *how close* you are to needing to ventilate |
-| `hero` | one verdict in a progress ring, pollutants as compact chips | an overview view, next to the climate card |
-| `tiles` | value tiles with a four-step meter | dense grids, or when you mainly want the numbers |
+| `style`           | Reads as                                                                                         | Good for                                                                 |
+| ----------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
+| `scale` (default) | each pollutant plotted on its health scale, with a marker and an advisory line when action helps | a detail/room view — you see _how close_ you are to needing to ventilate |
+| `hero`            | one verdict in a progress ring, pollutants as compact chips                                      | an overview view, next to the climate card                               |
+| `tiles`           | value tiles with a four-step meter                                                               | dense grids, or when you mainly want the numbers                         |
 
 ```yaml
 type: custom:custom-air-quality-card
 name: Salón
-style: scale              # scale | hero | tiles
-quality: sensor.monitor_aire_calidad_del_aire   # optional enum sensor; drives the verdict
+style: scale # scale | hero | tiles
+quality: sensor.monitor_aire_calidad_del_aire # optional enum sensor; drives the verdict
 co2: sensor.monitor_aire_dioxido_de_carbono
 pm25: sensor.monitor_aire_pm2_5
 voc: sensor.monitor_aire_voc
 temperature: sensor.monitor_aire_temperatura
 humidity: sensor.monitor_aire_humedad
-show_comfort: true        # temperature/humidity strip, default true
-thresholds:               # optional, [fair, poor, unhealthy]
+show_comfort: true # temperature/humidity strip, default true
+thresholds: # optional, [fair, poor, unhealthy]
   co2: [800, 1000, 1500]
   pm25: [12, 35, 55]
   voc: [100, 250, 400]
@@ -133,6 +137,7 @@ theme's success/warning/error colours. Without a `quality` entity the verdict is
 pollutant level; the `hero` subtitle names whichever pollutant sits furthest along its own scale.
 
 ### Appliance Card
+
 ```yaml
 type: custom:custom-appliance-card
 name: Lavavajillas
@@ -148,11 +153,12 @@ stop_button: button.lavavajillas_stop_program
 options:
   - switch.lavavajillas_half_load
   - switch.lavavajillas_extra_dry
-program_labels:           # optional
-  dishcare_dishwasher_program_eco_50: "Eco 50°"
+program_labels: # optional
+  dishcare_dishwasher_program_eco_50: 'Eco 50°'
 ```
 
 ### Person Card
+
 ```yaml
 type: custom:custom-person-card
 entity: person.manu
@@ -164,6 +170,7 @@ location: sensor.phone_geocoded_location
 ```
 
 ### To‑do Card
+
 ```yaml
 type: custom:custom-todo-card
 entity: todo.shopping_list
@@ -173,10 +180,11 @@ max_items: 10
 ```
 
 ### Status Card
+
 ```yaml
 type: custom:custom-status-card
 name: Seguridad
-layout: list              # list | grid
+layout: list # list | grid
 entities:
   - binary_sensor.sensor_humedad_cocina_water_leak
   - entity: sensor.lavavajillas_door
@@ -186,15 +194,16 @@ entities:
 ```
 
 ### Quick Actions Card
+
 ```yaml
 type: custom:custom-quick-actions-card
 name: Acciones
 columns: 4
 actions:
-  - entity: automation.luz_ambiente_entrada       # automation → trigger
-  - entity: button.zigbee2mqtt_bridge_restart     # button → press
+  - entity: automation.luz_ambiente_entrada # automation → trigger
+  - entity: button.zigbee2mqtt_bridge_restart # button → press
     name: Restart Z2M
-    confirm: true                                 # tap twice within 3 s
+    confirm: true # tap twice within 3 s
   - entity: switch.zigbee2mqtt_bridge_permit_join # switch → toggle, shows active state
   - name: Salón
     icon: mdi:sofa
@@ -202,6 +211,7 @@ actions:
 ```
 
 ### Room Overview Card
+
 ```yaml
 type: custom:custom-room-overview-card
 name: Salón
@@ -209,7 +219,7 @@ icon: mdi:sofa
 navigation_path: /dashboard-gaia/salon
 temperature_sensor: sensor.salon_temperatura
 humidity_sensor: sensor.salon_humedad
-lights:                   # light.* or switch.* wired to lamps
+lights: # light.* or switch.* wired to lamps
   - light.led_sofa
   - switch.pasillo_luz
 switches:
@@ -221,6 +231,7 @@ climate:
 ```
 
 ### Button Card
+
 ```yaml
 type: custom:custom-button-card
 entity: light.living_room
@@ -229,42 +240,74 @@ show_state: true
 ```
 
 ### Sensor Gauge Card
+
 ```yaml
 type: custom:custom-sensor-gauge-card
 entity: sensor.living_room_temperature
-unit: "°C"
+unit: '°C'
 min: 0
 max: 40
 style: circular
 thresholds:
   - value: 0
-    color: "#4caf50"
+    color: '#4caf50'
   - value: 27
-    color: "#ff9800"
+    color: '#ff9800'
   - value: 35
-    color: "#f44336"
+    color: '#f44336'
 ```
 
 ### Media Player Card
+
 ```yaml
 type: custom:custom-media-player-card
 entity: media_player.living_room
 show_volume: true
 show_source: true
 show_progress: true
-volume_step: 5   # percent per −/+ tap (press and hold to ramp)
+volume_step: 5 # percent per −/+ tap (press and hold to ramp)
 artwork: cover
 ```
+
 A remote-style layout: header with power button, optional artwork and now-playing info,
 a tap-to-seek progress bar, transport controls, and a volume row with mute, −/+ buttons
 and a slider. Controls that the entity does not support are hidden automatically.
 
 ### Power Monitor Card
+
 ```yaml
 type: custom:custom-power-monitor-card
 entity: sensor.enchufe_monitor_potencia
 daily_energy: sensor.enchufe_monitor_energia
 ```
+
+### PlayStation Card
+
+For the [PlayStation Network](https://www.home-assistant.io/integrations/playstation_network)
+integration. Point it at the account's **Online ID** sensor — the rest (online status, last online,
+trophy level and next-level progress, platinum/gold/silver/bronze counts, now playing, avatar,
+PS Plus) is discovered from the same device by the integration's translation keys, so it works
+whatever language your entity ids were generated in. Console media players linked to the account
+add the platform name ("PlayStation 5") and act as a cover-art fallback. Friends added to the
+integration work too: use the friend's Online ID sensor.
+
+```yaml
+type: custom:custom-playstation-card
+entity: sensor.manu_online_id
+name: Manu # optional, defaults to the Online ID
+show_now_playing: true # hidden automatically while nothing is being played
+show_level: true
+show_trophies: true
+# Optional overrides — only needed if discovery picks the wrong entity:
+# online_status, last_online, trophy_level, next_level, platinum, gold, silver, bronze,
+# now_playing, now_playing_image, avatar, ps_plus, media_player
+media_player: media_player.playstation_5
+```
+
+The level badge is tinted by PS5 tier (bronze 1–299, silver 300–599, gold 600–998, platinum 999).
+Colours can be overridden with `--custom-psn-platinum-color` / `-gold-` / `-silver-` / `-bronze-`,
+`--custom-psn-online-color` / `-app-` / `-away-` / `-offline-`, `--custom-psn-plus-color` and
+`--custom-psn-progress-color`.
 
 ## Theming hooks
 

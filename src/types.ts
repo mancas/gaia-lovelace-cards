@@ -12,6 +12,22 @@ export interface HassArea {
   icon?: string | null;
 }
 
+/** Entity registry entry as exposed on `hass.entities` (frontend display subset). */
+export interface HassEntityRegistryEntry {
+  entity_id: string;
+  device_id?: string | null;
+  platform?: string;
+  translation_key?: string | null;
+}
+
+/** Device registry entry as exposed on `hass.devices`. */
+export interface HassDevice {
+  id: string;
+  name?: string | null;
+  name_by_user?: string | null;
+  via_device_id?: string | null;
+}
+
 export interface HomeAssistant {
   states: Record<string, HassEntity>;
   callService(domain: string, service: string, data?: Record<string, unknown>): Promise<void>;
@@ -27,6 +43,8 @@ export interface HomeAssistant {
   language?: string;
   locale?: { language: string };
   areas?: Record<string, HassArea>;
+  entities?: Record<string, HassEntityRegistryEntry>;
+  devices?: Record<string, HassDevice>;
 }
 
 /** Card grid sizing hints used by HA "sections" views. */
@@ -161,6 +179,42 @@ export interface PowerMonitorCardConfig {
   unit?: string;
   daily_energy?: string;
   monthly_energy?: string;
+}
+
+/** Entities of one PlayStation Network account, keyed by card config option. */
+export interface PlayStationEntities {
+  online_status?: string;
+  last_online?: string;
+  trophy_level?: string;
+  /** "Next level" sensor — percentage towards the next trophy level */
+  next_level?: string;
+  platinum?: string;
+  gold?: string;
+  silver?: string;
+  bronze?: string;
+  /** "Now playing" sensor — the game title */
+  now_playing?: string;
+  /** "Now playing" image entity — the game icon */
+  now_playing_image?: string;
+  /** "Avatar" image entity */
+  avatar?: string;
+  /** "Subscribed to PlayStation Plus" binary sensor */
+  ps_plus?: string;
+  /** Console media player — used for the platform name and as cover-art fallback */
+  media_player?: string;
+}
+
+export interface PlayStationCardConfig extends PlayStationEntities {
+  type: string;
+  /**
+   * The account's "Online ID" sensor (playstation_network integration). Every other entity is
+   * discovered from the same device; the keys of `PlayStationEntities` override discovery.
+   */
+  entity: string;
+  name?: string;
+  show_level?: boolean;
+  show_trophies?: boolean;
+  show_now_playing?: boolean;
 }
 
 export interface ClimateCardConfig {
