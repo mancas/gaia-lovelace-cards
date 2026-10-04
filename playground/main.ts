@@ -260,6 +260,30 @@ const mockHass: HomeAssistant = {
     'switch.garden_lights': entity('switch.garden_lights', 'off', {
       friendly_name: 'Garden Lights',
     }),
+    // PlayStation Network — English entity ids, so the card falls back to id suffixes
+    'sensor.alex_psn_online_id': entity('sensor.alex_psn_online_id', 'Alex_PSN', {
+      friendly_name: 'Alex_PSN Online ID',
+    }),
+    'sensor.alex_psn_online_status': entity('sensor.alex_psn_online_status', 'availabletoplay', {
+      device_class: 'enum',
+    }),
+    'sensor.alex_psn_trophy_level': entity('sensor.alex_psn_trophy_level', '318'),
+    'sensor.alex_psn_next_level': entity('sensor.alex_psn_next_level', '42', {
+      unit_of_measurement: '%',
+    }),
+    'sensor.alex_psn_platinum_trophies': entity('sensor.alex_psn_platinum_trophies', '9'),
+    'sensor.alex_psn_gold_trophies': entity('sensor.alex_psn_gold_trophies', '143'),
+    'sensor.alex_psn_silver_trophies': entity('sensor.alex_psn_silver_trophies', '512'),
+    'sensor.alex_psn_bronze_trophies': entity('sensor.alex_psn_bronze_trophies', '1876'),
+    'sensor.alex_psn_now_playing': entity('sensor.alex_psn_now_playing', 'Astro Bot'),
+    'binary_sensor.alex_psn_subscribed_to_playstation_plus': entity(
+      'binary_sensor.alex_psn_subscribed_to_playstation_plus',
+      'on',
+    ),
+    'media_player.playstation_5': entity('media_player.playstation_5', 'playing', {
+      friendly_name: 'PlayStation 5',
+      media_title: 'Astro Bot',
+    }),
     'input_boolean.guest_mode': entity('input_boolean.guest_mode', 'off', {
       friendly_name: 'Guest Mode',
     }),
@@ -492,6 +516,14 @@ const sections: Section[] = [
           show_volume: true,
           show_source: true,
           artwork: 'none',
+        },
+      },
+      {
+        tag: 'custom-playstation-card',
+        label: 'custom-playstation-card',
+        config: {
+          entity: 'sensor.alex_psn_online_id',
+          media_player: 'media_player.playstation_5',
         },
       },
     ],
